@@ -1,0 +1,265 @@
+/**
+ * macOS Sequoia Design System - CSS Variables
+ * Light/Dark mode semantic color tokens
+ */
+
+:root {
+  /* === Background Colors === */
+  --sys-bg-base: #FFFFFF;
+  --sys-bg-alt: #F5F5F7;
+
+  /* === Text Colors === */
+  --sys-text-primary: #1D1D1F;
+  --sys-text-secondary: #6E6E73;
+  --sys-text-tertiary: #AEAEB2;
+
+  /* === Separator === */
+  --sys-separator: rgba(0, 0, 0, 0.08);
+
+  /* === Action Colors === */
+  --action-primary: #007AFF;
+  --action-hover: #0A84FF;
+
+  /* === Feedback Colors === */
+  --feedback-success: #34C759;
+  --feedback-warning: #FF9500;
+  --feedback-danger: #FF3B30;
+
+  /* === Glass Materials (Light Mode) === */
+  --mat-sidebar: rgba(245, 245, 247, 0.72);
+  --mat-header: rgba(255, 255, 255, 0.6);
+  --mat-hud: rgba(255, 255, 255, 0.85);
+  --mat-popover: rgba(255, 255, 255, 0.72);
+
+  /* === Traffic Lights === */
+  --traffic-close: #FF5F57;
+  --traffic-minimize: #FEBC2E;
+  --traffic-maximize: #28C840;
+
+  /* === Immersive Background === */
+  --immersive-bg: linear-gradient(135deg, #f5f5f7 0%, #e8e8ed 100%);
+}
+
+/* Dark Mode */
+.dark {
+  --sys-bg-base: #1C1C1E;
+  --sys-bg-alt: #000000;
+
+  --sys-text-primary: #F5F5F7;
+  --sys-text-secondary: #A1A1A6;
+  --sys-text-tertiary: #6E6E73;
+
+  --sys-separator: rgba(255, 255, 255, 0.08);
+
+  --action-primary: #0A84FF;
+  --action-hover: #409CFF;
+
+  --feedback-success: #30D158;
+  --feedback-warning: #FF9F0A;
+  --feedback-danger: #FF453A;
+
+  --mat-sidebar: rgba(28, 28, 30, 0.72);
+  --mat-header: rgba(28, 28, 30, 0.6);
+  --mat-hud: rgba(44, 44, 46, 0.85);
+  --mat-popover: rgba(38, 38, 40, 0.72);
+
+  --immersive-bg: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);
+}
+
+/* === Immersive Window Container === */
+.immersive-window {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+/* === Apple Intelligence Glow Border === */
+.ai-glowing-border {
+  position: relative;
+  border-radius: inherit;
+  isolation: isolate;
+}
+
+.ai-glowing-border::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background: var(--action-primary);
+  filter: blur(8px);
+  z-index: -1;
+  border-radius: inherit;
+  opacity: 0.35;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+}
+
+.ai-glowing-border:hover::before {
+  filter: blur(10px);
+  opacity: 0.45;
+}
+
+/* === AI Text Shimmer Effect === */
+.ai-shimmer-text {
+  background-image: linear-gradient(90deg,
+      #00FFFF,
+      #FF00FF,
+      #FFD60A,
+      #00FFFF);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: ai-shimmer 2s linear infinite;
+}
+
+@keyframes ai-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* === Glass Material Mixins === */
+.glass-sidebar {
+  background: var(--mat-sidebar);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+.glass-header {
+  background: var(--mat-header);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+}
+
+.glass-hud {
+  background: var(--mat-hud);
+  backdrop-filter: blur(50px) saturate(200%);
+  -webkit-backdrop-filter: blur(50px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.15),
+    0 0 0 0.5px rgba(255, 255, 255, 0.5) inset;
+}
+
+.glass-popover {
+  background: var(--mat-popover);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+}
+
+/* === Halo Focus Ring === */
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 1px #FFFFFF,
+    0 0 0 4px rgba(0, 122, 255, 0.5);
+  transition: box-shadow 0.2s ease-out;
+}
+
+.dark .focus-ring:focus-visible {
+  box-shadow:
+    0 0 0 1px #000000,
+    0 0 0 4px rgba(10, 132, 255, 0.5);
+}
+
+/* === Scrollbar Styling === */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* === Typography Utilities === */
+.text-large-title {
+  font-size: 34px;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-weight: 400;
+}
+
+.text-title-1 {
+  font-size: 28px;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  font-weight: 400;
+}
+
+.text-title-2 {
+  font-size: 22px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  font-weight: 500;
+}
+
+.text-headline {
+  font-size: 17px;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+
+.text-body {
+  font-size: 17px;
+  line-height: 1.5;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+.text-callout {
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+.text-subheadline {
+  font-size: 15px;
+  line-height: 1.4;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+.text-footnote {
+  font-size: 13px;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  font-weight: 400;
+}
+
+.text-caption-1 {
+  font-size: 12px;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+}
+
+.text-caption-2 {
+  font-size: 11px;
+  line-height: 1.3;
+  letter-spacing: 0.03em;
+  font-weight: 500;
+}

@@ -1,0 +1,1976 @@
+app:
+  description: 社内向けAIチャットボットのRAG機能実装において、poc段階としてのアプリ開発を行います。
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: AIagent_Rag_poc_copy
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: r3-yamauchi/gemini_file_search:0.0.1@a9cf50b020b00b20f3b3f462d697f797517551d5d8bb8bf7ef078847080cabeb
+    version: null
+kind: app
+version: 0.5.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      - document
+      allowed_file_upload_methods:
+      - remote_url
+      - local_file
+      enabled: true
+      fileUploadConfig:
+        attachment_image_file_size_limit: 2
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        file_upload_limit: 50
+        image_file_batch_limit: 10
+        image_file_size_limit: 10
+        single_chunk_attachment_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: true
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: tool
+        targetType: tool
+      id: 1766728093931-source-1767931792292-target
+      source: '1766728093931'
+      sourceHandle: source
+      target: '1767931792292'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: tool
+        targetType: answer
+      id: 1767931792292-source-1767931860385-target
+      source: '1767931792292'
+      sourceHandle: source
+      target: '1767931860385'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: tool
+        targetType: answer
+      id: 1767931818139-source-1767932151372-target
+      source: '1767931818139'
+      sourceHandle: source
+      target: '1767932151372'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: tool
+        targetType: answer
+      id: 1767932557151-source-1767932568024-target
+      source: '1767932557151'
+      sourceHandle: source
+      target: '1767932568024'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: tool
+        targetType: answer
+      id: 1767932663680-source-1767932682908-target
+      source: '1767932663680'
+      sourceHandle: source
+      target: '1767932682908'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: tool
+      id: 1767932425633-source-1767932557151-target
+      source: '1767932425633'
+      sourceHandle: source
+      target: '1767932557151'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: tool
+      id: 1767932648362-source-1767932663680-target
+      source: '1767932648362'
+      sourceHandle: source
+      target: '1767932663680'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: tool
+      id: 1766728333106-true-1766728093931-target
+      source: '1766728333106'
+      sourceHandle: 'true'
+      target: '1766728093931'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: tool
+      id: 1766728333106-abe19c5a-acbb-4965-9de0-53c6022403ff-1767932425633-target
+      source: '1766728333106'
+      sourceHandle: abe19c5a-acbb-4965-9de0-53c6022403ff
+      target: '1767932425633'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: tool
+      id: 1766728333106-39461cdf-6b47-4ccd-a509-ca8c18d01ae7-1767932648362-target
+      source: '1766728333106'
+      sourceHandle: 39461cdf-6b47-4ccd-a509-ca8c18d01ae7
+      target: '1767932648362'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: tool
+      id: 1766728333106-afc502fb-d863-4a75-bfbc-82fed7648134-1767933183297-target
+      source: '1766728333106'
+      sourceHandle: afc502fb-d863-4a75-bfbc-82fed7648134
+      target: '1767933183297'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: tool
+      id: 1766728333106-36523f63-7a93-478d-8647-4a89c9f41af0-1767933198834-target
+      source: '1766728333106'
+      sourceHandle: 36523f63-7a93-478d-8647-4a89c9f41af0
+      target: '1767933198834'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: answer
+      id: 1766728333106-false-1768531376707-target
+      source: '1766728333106'
+      sourceHandle: 'false'
+      target: '1768531376707'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: if-else
+      id: 1766728333106-157829e3-8381-42a7-963d-da0e8ab209b5-1768533032079-target
+      source: '1766728333106'
+      sourceHandle: 157829e3-8381-42a7-963d-da0e8ab209b5
+      target: '1768533032079'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: code
+      id: 1767933183297-source-1768536588293-target
+      source: '1767933183297'
+      sourceHandle: source
+      target: '1768536588293'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: answer
+      id: 1768536588293-source-1767933222748-target
+      source: '1768536588293'
+      sourceHandle: source
+      target: '1767933222748'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: answer
+      id: 1766730025729-source-answer-target
+      source: '1766730025729'
+      sourceHandle: source
+      target: answer
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: answer
+      id: 1768533032079-false-1768533195948-target
+      source: '1768533032079'
+      sourceHandle: 'false'
+      target: '1768533195948'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: tool
+      id: 1768533280265-source-1767931818139-target
+      source: '1768533280265'
+      sourceHandle: source
+      target: '1767931818139'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: tool
+      id: 1768533032079-true-1768533280265-target
+      source: '1768533032079'
+      sourceHandle: 'true'
+      target: '1768533280265'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: if-else
+      id: 1766725010321-source-1766728333106-target
+      source: '1766725010321'
+      sourceHandle: source
+      target: '1766728333106'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: tool
+      id: 1766728333106-77b0444c-b0f4-4b08-942c-5c173a53dfca-1766730025729-target
+      source: '1766728333106'
+      sourceHandle: 77b0444c-b0f4-4b08-942c-5c173a53dfca
+      target: '1766730025729'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: answer
+      id: 1767933198834-source-1767933256504-target
+      source: '1767933198834'
+      sourceHandle: source
+      target: '1767933256504'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        selected: false
+        title: ユーザー入力
+        type: start
+        variables:
+        - default: ''
+          hint: ''
+          label: file_search_store_name
+          max_length: 256
+          options: []
+          placeholder: ''
+          required: false
+          type: text-input
+          variable: file_search_store_name
+        - allowed_file_extensions: []
+          allowed_file_types:
+          - document
+          - image
+          allowed_file_upload_methods:
+          - local_file
+          - remote_url
+          default: ''
+          hint: ''
+          label: file
+          max_length: 5
+          options: []
+          placeholder: ''
+          required: false
+          type: file
+          variable: file
+        - default: ''
+          hint: ''
+          label: display_name
+          max_length: 100
+          options: []
+          placeholder: ''
+          required: false
+          type: text-input
+          variable: display_name
+        - default: ファイル内を検索する
+          hint: ''
+          label: option
+          max_length: 48
+          options:
+          - ファイル内を検索する
+          - ファイルをアップロードする？
+          - ファイル検索ストアを作成する？
+          - ファイルを削除する？
+          - ファイル検索ストアを削除する？
+          - ファイル検索ストアの一覧を表示する？
+          - ストア内のファイルの一覧を表示する？
+          placeholder: ''
+          required: true
+          type: select
+          variable: option
+        - default: ''
+          hint: ''
+          label: document_id
+          max_length: 48
+          options: []
+          placeholder: ''
+          required: false
+          type: text-input
+          variable: document_id
+        - hint: ''
+          label: metadata_company
+          max_length: 48
+          options:
+          - アイフラッグ
+          - EPARKリラク＆エステ
+          - EPARKペットライフ
+          placeholder: ''
+          required: false
+          type: select
+          variable: metadata_company
+        - hint: ''
+          label: metadata_department
+          max_length: 48
+          options:
+          - 営業
+          - マーケティング・広告
+          - 開発
+          - 運用
+          - コンタクトセンター
+          - その他
+          placeholder: ''
+          required: false
+          type: select
+          variable: metadata_department
+        - hint: ''
+          label: metadata_filetype
+          max_length: 48
+          options:
+          - 会社規定
+          - 議事録
+          - 手引書
+          - その他
+          placeholder: ''
+          required: false
+          type: select
+          variable: metadata_filetype
+      height: 291
+      id: '1766725010321'
+      position:
+        x: 909.0969618811878
+        y: 230.46563673864642
+      positionAbsolute:
+        x: 909.0969618811878
+        y: 230.46563673864642
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        answer: '{{#1766730025729.text#}}'
+        selected: false
+        title: ファイル検索ストアの回答
+        type: answer
+        variables: []
+      height: 102
+      id: answer
+      position:
+        x: 2367.826362274245
+        y: 54.339542796479805
+      positionAbsolute:
+        x: 2367.826362274245
+        y: 54.339542796479805
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        is_team_authorization: false
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Optional display name for the file search store (helps identify
+              the store later)
+            ja_JP: ファイル検索ストアのオプション表示名（後でストアを識別するのに役立ちます）
+            pt_BR: Optional display name for the file search store (helps identify
+              the store later)
+            zh_Hans: 文件搜索存储的可选显示名称（有助于以后识别存储）
+          label:
+            en_US: Display Name
+            ja_JP: 表示名
+            pt_BR: Display Name
+            zh_Hans: 显示名称
+          llm_description: Optional human-readable name for the store
+          max: null
+          min: null
+          name: display_name
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        params:
+          display_name: ''
+        plugin_id: r3-yamauchi/gemini_file_search
+        plugin_unique_identifier: r3-yamauchi/gemini_file_search:0.0.1@a9cf50b020b00b20f3b3f462d697f797517551d5d8bb8bf7ef078847080cabeb
+        provider_icon: https://cloud.dify.ai/console/api/workspaces/current/plugin/icon?tenant_id=7c8ea1f1-d371-448a-846c-af9a868d7d0f&filename=3f9d718ced2ecb925cbe752d6311f3966405463315b8e898110f0a8cca969899.svg
+        provider_id: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_name: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_type: builtin
+        selected: false
+        title: ファイル検索ストア作成
+        tool_configurations: {}
+        tool_description: ドキュメントの保存とインデックス化のための新しいGeminiファイル検索ストアを作成します
+        tool_label: ファイル検索ストア作成
+        tool_name: create_store
+        tool_node_version: '2'
+        tool_parameters:
+          display_name:
+            type: mixed
+            value: '{{#1766725010321.display_name#}}'
+        type: tool
+      height: 52
+      id: '1766728093931'
+      position:
+        x: 2129.0351166420996
+        y: 364.3819552123481
+      positionAbsolute:
+        x: 2129.0351166420996
+        y: 364.3819552123481
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: 4b2e9c03-9d6b-425c-98a7-6a64a5d9ba83
+            value: ファイル検索ストアを作成する？
+            varType: string
+            variable_selector:
+            - '1766725010321'
+            - option
+          id: 'true'
+          logical_operator: and
+        - case_id: 157829e3-8381-42a7-963d-da0e8ab209b5
+          conditions:
+          - comparison_operator: is
+            id: 77ecc37a-8ca3-4c06-b209-20fc29b1376e
+            value: ファイルをアップロードする？
+            varType: string
+            variable_selector:
+            - '1766725010321'
+            - option
+          id: 157829e3-8381-42a7-963d-da0e8ab209b5
+          logical_operator: and
+        - case_id: abe19c5a-acbb-4965-9de0-53c6022403ff
+          conditions:
+          - comparison_operator: is
+            id: 811f8bc4-5df5-414d-9aa0-468b3da3e9e7
+            value: ファイルを削除する？
+            varType: string
+            variable_selector:
+            - '1766725010321'
+            - option
+          id: abe19c5a-acbb-4965-9de0-53c6022403ff
+          logical_operator: and
+        - case_id: 39461cdf-6b47-4ccd-a509-ca8c18d01ae7
+          conditions:
+          - comparison_operator: is
+            id: b0c31e8b-e3e7-43bb-ad79-d07089c45dc0
+            value: ファイル検索ストアを削除する？
+            varType: string
+            variable_selector:
+            - '1766725010321'
+            - option
+          id: 39461cdf-6b47-4ccd-a509-ca8c18d01ae7
+          logical_operator: and
+        - case_id: afc502fb-d863-4a75-bfbc-82fed7648134
+          conditions:
+          - comparison_operator: is
+            id: 4e57fb9e-3bbc-40fb-8482-eb9dfd5acbe0
+            value: ストア内のファイルの一覧を表示する？
+            varType: string
+            variable_selector:
+            - '1766725010321'
+            - option
+          id: afc502fb-d863-4a75-bfbc-82fed7648134
+          logical_operator: and
+        - case_id: 36523f63-7a93-478d-8647-4a89c9f41af0
+          conditions:
+          - comparison_operator: is
+            id: ebc6a8a9-2188-44d6-9cdf-04dedf85c6ab
+            value: ファイル検索ストアの一覧を表示する？
+            varType: string
+            variable_selector:
+            - '1766725010321'
+            - option
+          id: 36523f63-7a93-478d-8647-4a89c9f41af0
+          logical_operator: and
+        - case_id: 77b0444c-b0f4-4b08-942c-5c173a53dfca
+          conditions:
+          - comparison_operator: is
+            id: e123b646-e38e-4e73-a88c-401349b64c89
+            value: ファイル内を検索する
+            varType: string
+            variable_selector:
+            - '1766725010321'
+            - option
+          id: 77b0444c-b0f4-4b08-942c-5c173a53dfca
+          logical_operator: and
+        selected: false
+        title: create or delete or lookup
+        type: if-else
+      height: 412
+      id: '1766728333106'
+      position:
+        x: 1219.3749230783849
+        y: 276.445770415221
+      positionAbsolute:
+        x: 1219.3749230783849
+        y: 276.445770415221
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        is_team_authorization: true
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: The name of the file search store to search in (e.g., fileSearchStores/abc123)
+            ja_JP: '検索対象のファイル検索ストア名（例: fileSearchStores/abc123）'
+            pt_BR: The name of the file search store to search in (e.g., fileSearchStores/abc123)
+            zh_Hans: 要搜索的文件搜索存储名称（例如：fileSearchStores/abc123）
+          label:
+            en_US: Store Name
+            ja_JP: ストア名
+            pt_BR: Store Name
+            zh_Hans: 存储名称
+          llm_description: File search store name to query
+          max: null
+          min: null
+          name: file_search_store_name
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: The search query or question to ask about the documents
+            ja_JP: ドキュメントについて尋ねる検索クエリまたは質問
+            pt_BR: The search query or question to ask about the documents
+            zh_Hans: 要询问文档的搜索查询或问题
+          label:
+            en_US: Query
+            ja_JP: クエリ
+            pt_BR: Query
+            zh_Hans: 查询
+          llm_description: Search query or question
+          max: null
+          min: null
+          name: query
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: 'Include citation information in the response (default: false)'
+            ja_JP: 'レスポンスに出典情報を含める（デフォルト: false）'
+            pt_BR: 'Include citation information in the response (default: false)'
+            zh_Hans: 在响应中包含引用信息（默认：false）
+          label:
+            en_US: Include Citations
+            ja_JP: 出典を含める
+            pt_BR: Include Citations
+            zh_Hans: 包含引用
+          llm_description: Whether to include grounding metadata
+          max: null
+          min: null
+          name: include_citations
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: boolean
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Optional filter expression (e.g., "author=John Doe") to search
+              within a subset of documents
+            ja_JP: ドキュメントのサブセット内を検索するオプションのフィルタ式（例：「author=John Doe」）
+            pt_BR: Optional filter expression (e.g., "author=John Doe") to search
+              within a subset of documents
+            zh_Hans: 可选的过滤器表达式（例如："author=John Doe"）以在文档子集中搜索
+          label:
+            en_US: Metadata Filter
+            ja_JP: メタデータフィルタ
+            pt_BR: Metadata Filter
+            zh_Hans: 元数据过滤器
+          llm_description: Optional metadata filter for scoped search
+          max: null
+          min: null
+          name: metadata_filter
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Gemini model to use (defaults to provider setting or gemini-2.5-flash)
+            ja_JP: 使用するGeminiモデル（プロバイダー設定またはgemini-2.5-flashがデフォルト）
+            pt_BR: Gemini model to use (defaults to provider setting or gemini-2.5-flash)
+            zh_Hans: 要使用的Gemini模型（默认为提供商设置或gemini-2.5-flash）
+          label:
+            en_US: Model
+            ja_JP: モデル
+            pt_BR: Model
+            zh_Hans: 模型
+          llm_description: Optional model override
+          max: null
+          min: null
+          name: model
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        params:
+          file_search_store_name: ''
+          include_citations: ''
+          metadata_filter: ''
+          model: ''
+          query: ''
+        plugin_id: r3-yamauchi/gemini_file_search
+        plugin_unique_identifier: r3-yamauchi/gemini_file_search:0.0.1@a9cf50b020b00b20f3b3f462d697f797517551d5d8bb8bf7ef078847080cabeb
+        provider_icon: https://cloud.dify.ai/console/api/workspaces/current/plugin/icon?tenant_id=7c8ea1f1-d371-448a-846c-af9a868d7d0f&filename=3f9d718ced2ecb925cbe752d6311f3966405463315b8e898110f0a8cca969899.svg
+        provider_id: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_name: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_type: builtin
+        selected: false
+        title: ファイル検索ストアを指定して検索
+        tool_configurations: {}
+        tool_description: Geminiの RAG機能を使用して、ファイル検索ストア内のインデックス化されたドキュメント全体でセマンティック検索を実行します
+        tool_label: ファイル検索ストアを指定して検索
+        tool_name: search
+        tool_node_version: '2'
+        tool_parameters:
+          file_search_store_name:
+            type: mixed
+            value: '{{#1766725010321.file_search_store_name#}}'
+          include_citations:
+            type: constant
+            value: true
+          metadata_filter:
+            type: mixed
+            value: ''
+          model:
+            type: mixed
+            value: ''
+          query:
+            type: mixed
+            value: '{{#sys.query#}}'
+        type: tool
+      height: 52
+      id: '1766730025729'
+      position:
+        x: 1632.8745708478828
+        y: 193.47906914694025
+      positionAbsolute:
+        x: 1632.8745708478828
+        y: 193.47906914694025
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        is_team_authorization: true
+        paramSchemas: []
+        params: {}
+        plugin_id: r3-yamauchi/gemini_file_search
+        plugin_unique_identifier: r3-yamauchi/gemini_file_search:0.0.1@a9cf50b020b00b20f3b3f462d697f797517551d5d8bb8bf7ef078847080cabeb
+        provider_icon: https://cloud.dify.ai/console/api/workspaces/current/plugin/icon?tenant_id=7c8ea1f1-d371-448a-846c-af9a868d7d0f&filename=3f9d718ced2ecb925cbe752d6311f3966405463315b8e898110f0a8cca969899.svg
+        provider_id: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_name: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_type: builtin
+        selected: false
+        title: ファイル検索ストア一覧
+        tool_configurations: {}
+        tool_description: プロジェクト内の全ファイル検索ストアを一覧表示します
+        tool_label: ファイル検索ストア一覧
+        tool_name: list_stores
+        tool_node_version: '2'
+        tool_parameters: {}
+        type: tool
+      height: 52
+      id: '1767931792292'
+      position:
+        x: 2434.5577445110807
+        y: 295.5646821398463
+      positionAbsolute:
+        x: 2434.5577445110807
+        y: 295.5646821398463
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        is_team_authorization: true
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: File search store resource name (e.g., fileSearchStores/abc123)
+            ja_JP: 'ファイル検索ストアのリソース名（例: fileSearchStores/abc123）'
+            pt_BR: File search store resource name (e.g., fileSearchStores/abc123)
+            zh_Hans: 文件搜索存储资源名称（例如：fileSearchStores/abc123）
+          label:
+            en_US: Store Name
+            ja_JP: ストア名
+            pt_BR: Store Name
+            zh_Hans: 存储名称
+          llm_description: File search store containing the documents
+          max: null
+          min: null
+          name: file_search_store_name
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Optional page size (1-100). Defaults to the API setting.
+            ja_JP: オプションのページサイズ（1〜100）。未設定時はAPIデフォルト。
+            pt_BR: Optional page size (1-100). Defaults to the API setting.
+            zh_Hans: 可选页面大小（1-100）。未设置时使用API默认。
+          label:
+            en_US: Page Size
+            ja_JP: ページサイズ
+            pt_BR: Page Size
+            zh_Hans: 页面大小
+          llm_description: Optional page size limit (max 100)
+          max: null
+          min: null
+          name: page_size
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: number
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Provide the token from a previous response to fetch the next page
+            ja_JP: 前回レスポンスで受け取ったトークンを指定すると次ページを取得できます
+            pt_BR: Provide the token from a previous response to fetch the next page
+            zh_Hans: 提供上一次响应中的令牌以获取下一页
+          label:
+            en_US: Page Token
+            ja_JP: ページトークン
+            pt_BR: Page Token
+            zh_Hans: 页面令牌
+          llm_description: Page token for pagination
+          max: null
+          min: null
+          name: page_token
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        params:
+          file_search_store_name: ''
+          page_size: ''
+          page_token: ''
+        plugin_id: r3-yamauchi/gemini_file_search
+        plugin_unique_identifier: r3-yamauchi/gemini_file_search:0.0.1@a9cf50b020b00b20f3b3f462d697f797517551d5d8bb8bf7ef078847080cabeb
+        provider_icon: https://cloud.dify.ai/console/api/workspaces/current/plugin/icon?tenant_id=7c8ea1f1-d371-448a-846c-af9a868d7d0f&filename=3f9d718ced2ecb925cbe752d6311f3966405463315b8e898110f0a8cca969899.svg
+        provider_id: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_name: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_type: builtin
+        selected: false
+        title: ストア内のファイル一覧
+        tool_configurations: {}
+        tool_description: 現在のGeminiファイル検索ストアにインデックスされているドキュメントを一覧表示します
+        tool_label: ストア内のファイル一覧
+        tool_name: list_files
+        tool_node_version: '2'
+        tool_parameters:
+          file_search_store_name:
+            type: mixed
+            value: '{{#1766725010321.file_search_store_name#}}'
+          page_size:
+            type: constant
+            value: null
+          page_token:
+            type: mixed
+            value: null
+        type: tool
+      height: 52
+      id: '1767931818139'
+      position:
+        x: 3330.675023880695
+        y: 399.40092798910996
+      positionAbsolute:
+        x: 3330.675023880695
+        y: 399.40092798910996
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        answer: '作成したファイル検索ストア:{{#1766728093931.text#}}
+
+
+          すべてのファイル検索ストア一覧:{{#1767931792292.text#}}'
+        selected: false
+        title: ファイル検索ストアの作成＿回答
+        type: answer
+        variables: []
+      height: 136
+      id: '1767931860385'
+      position:
+        x: 2747.8530484823186
+        y: 110.32169701153356
+      positionAbsolute:
+        x: 2747.8530484823186
+        y: 110.32169701153356
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        answer: 'アップロードしたファイル:{{#1768533280265.text#}}
+
+          ストア名:{{#1766725010321.file_search_store_name#}}
+
+
+          ストア内のファイル一覧:{{#1767931818139.text#}}
+
+
+          付与したメタデータ:{{#1766725010321.metadata_company#}},{{#1766725010321.metadata_department#}},{{#1766725010321.metadata_filetype#}}'
+        selected: false
+        title: 'ファイルアップロード＿回答 '
+        type: answer
+        variables: []
+      height: 272
+      id: '1767932151372'
+      position:
+        x: 3714.4977451319583
+        y: 444.82177692598543
+      positionAbsolute:
+        x: 3714.4977451319583
+        y: 444.82177692598543
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        is_team_authorization: true
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Store that contains the document (e.g., fileSearchStores/abc123)
+            ja_JP: 'ドキュメントを含むストア名（例: fileSearchStores/abc123）'
+            pt_BR: Store that contains the document (e.g., fileSearchStores/abc123)
+            zh_Hans: 包含文档的存储名称（例如：fileSearchStores/abc123）
+          label:
+            en_US: Store Name
+            ja_JP: ストア名
+            pt_BR: Store Name
+            zh_Hans: 存储名称
+          llm_description: File search store resource name
+          max: null
+          min: null
+          name: file_search_store_name
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Full document resource name (preferred). If omitted, provide document_id.
+            ja_JP: 完全なドキュメントリソース名（推奨）。未指定の場合は document_id を入力してください。
+            pt_BR: Full document resource name (preferred). If omitted, provide document_id.
+            zh_Hans: 完整的文档资源名称（推荐）。如果未提供，请填写 document_id。
+          label:
+            en_US: Document Name
+            ja_JP: ドキュメント名
+            pt_BR: Document Name
+            zh_Hans: 文档名称
+          llm_description: Full document resource path
+          max: null
+          min: null
+          name: document_name
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Document identifier when you do not have the full resource name
+              (with or without the "documents/" prefix)
+            ja_JP: 完全なリソース名を持たない場合のID（"documents/"プレフィックスの有無は任意）
+            pt_BR: Document identifier when you do not have the full resource name
+              (with or without the "documents/" prefix)
+            zh_Hans: 当没有完整资源名称时使用的文档ID（可带或不带 "documents/" 前缀）
+          label:
+            en_US: Document ID
+            ja_JP: ドキュメントID
+            pt_BR: Document ID
+            zh_Hans: 文档ID
+          llm_description: Document identifier used to build the resource name
+          max: null
+          min: null
+          name: document_id
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Must be true to proceed. Prevents accidental deletions triggered
+              by LLMs.
+            ja_JP: true の場合のみ削除を実行します。LLMによる誤削除防止のための確認。
+            pt_BR: Must be true to proceed. Prevents accidental deletions triggered
+              by LLMs.
+            zh_Hans: 必须为 true 才会执行删除，以防止 LLM 意外删除。
+          label:
+            en_US: Confirm Deletion
+            ja_JP: 削除を確認する
+            pt_BR: Confirm Deletion
+            zh_Hans: 确认删除
+          llm_description: Must be true to delete
+          max: null
+          min: null
+          name: confirm
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: boolean
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Set to true to force deletion even if the document is in use
+            ja_JP: ドキュメントが使用中でも削除する場合は true に設定します
+            pt_BR: Set to true to force deletion even if the document is in use
+            zh_Hans: 即使文档正在使用也要删除时设为 true
+          label:
+            en_US: Force Delete
+            ja_JP: 強制削除
+            pt_BR: Force Delete
+            zh_Hans: 强制删除
+          llm_description: Force flag for deletion
+          max: null
+          min: null
+          name: force
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: boolean
+        params:
+          confirm: ''
+          document_id: ''
+          document_name: ''
+          file_search_store_name: ''
+          force: ''
+        plugin_id: r3-yamauchi/gemini_file_search
+        plugin_unique_identifier: r3-yamauchi/gemini_file_search:0.0.1@a9cf50b020b00b20f3b3f462d697f797517551d5d8bb8bf7ef078847080cabeb
+        provider_icon: https://cloud.dify.ai/console/api/workspaces/current/plugin/icon?tenant_id=7c8ea1f1-d371-448a-846c-af9a868d7d0f&filename=3f9d718ced2ecb925cbe752d6311f3966405463315b8e898110f0a8cca969899.svg
+        provider_id: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_name: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_type: builtin
+        selected: false
+        title: ファイル削除
+        tool_configurations: {}
+        tool_description: Gemini ファイル検索ストアから単一ドキュメントを削除します
+        tool_label: ファイル削除
+        tool_name: delete_file
+        tool_node_version: '2'
+        tool_parameters:
+          confirm:
+            type: constant
+            value: true
+          document_id:
+            type: mixed
+            value: '{{#1766725010321.document_id#}}'
+          document_name:
+            type: mixed
+            value: ''
+          file_search_store_name:
+            type: mixed
+            value: '{{#1766725010321.file_search_store_name#}}'
+          force:
+            type: constant
+            value: true
+        type: tool
+      height: 52
+      id: '1767932425633'
+      position:
+        x: 2137.9789723142444
+        y: 660.9156963850123
+      positionAbsolute:
+        x: 2137.9789723142444
+        y: 660.9156963850123
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        is_team_authorization: true
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: File search store resource name (e.g., fileSearchStores/abc123)
+            ja_JP: 'ファイル検索ストアのリソース名（例: fileSearchStores/abc123）'
+            pt_BR: File search store resource name (e.g., fileSearchStores/abc123)
+            zh_Hans: 文件搜索存储资源名称（例如：fileSearchStores/abc123）
+          label:
+            en_US: Store Name
+            ja_JP: ストア名
+            pt_BR: Store Name
+            zh_Hans: 存储名称
+          llm_description: File search store containing the documents
+          max: null
+          min: null
+          name: file_search_store_name
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Optional page size (1-100). Defaults to the API setting.
+            ja_JP: オプションのページサイズ（1〜100）。未設定時はAPIデフォルト。
+            pt_BR: Optional page size (1-100). Defaults to the API setting.
+            zh_Hans: 可选页面大小（1-100）。未设置时使用API默认。
+          label:
+            en_US: Page Size
+            ja_JP: ページサイズ
+            pt_BR: Page Size
+            zh_Hans: 页面大小
+          llm_description: Optional page size limit (max 100)
+          max: null
+          min: null
+          name: page_size
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: number
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Provide the token from a previous response to fetch the next page
+            ja_JP: 前回レスポンスで受け取ったトークンを指定すると次ページを取得できます
+            pt_BR: Provide the token from a previous response to fetch the next page
+            zh_Hans: 提供上一次响应中的令牌以获取下一页
+          label:
+            en_US: Page Token
+            ja_JP: ページトークン
+            pt_BR: Page Token
+            zh_Hans: 页面令牌
+          llm_description: Page token for pagination
+          max: null
+          min: null
+          name: page_token
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        params:
+          file_search_store_name: ''
+          page_size: ''
+          page_token: ''
+        plugin_id: r3-yamauchi/gemini_file_search
+        plugin_unique_identifier: r3-yamauchi/gemini_file_search:0.0.1@a9cf50b020b00b20f3b3f462d697f797517551d5d8bb8bf7ef078847080cabeb
+        provider_icon: https://cloud.dify.ai/console/api/workspaces/current/plugin/icon?tenant_id=7c8ea1f1-d371-448a-846c-af9a868d7d0f&filename=3f9d718ced2ecb925cbe752d6311f3966405463315b8e898110f0a8cca969899.svg
+        provider_id: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_name: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_type: builtin
+        selected: false
+        title: ストア内のファイル一覧
+        tool_configurations: {}
+        tool_description: 現在のGeminiファイル検索ストアにインデックスされているドキュメントを一覧表示します
+        tool_label: ストア内のファイル一覧
+        tool_name: list_files
+        tool_node_version: '2'
+        tool_parameters:
+          file_search_store_name:
+            type: mixed
+            value: '{{#1766725010321.file_search_store_name#}}'
+          page_size:
+            type: constant
+            value: null
+          page_token:
+            type: mixed
+            value: null
+        type: tool
+      height: 52
+      id: '1767932557151'
+      position:
+        x: 2439.9789723142444
+        y: 660.9156963850123
+      positionAbsolute:
+        x: 2439.9789723142444
+        y: 660.9156963850123
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        answer: '削除したファイル名:{{#1767932425633.text#}}
+
+
+          ファイル検索ストアに残ったファイル一覧:{{#1767932557151.text#}}'
+        selected: false
+        title: ファイル削除＿回答
+        type: answer
+        variables: []
+      height: 152
+      id: '1767932568024'
+      position:
+        x: 2741.9789723142444
+        y: 660.9156963850123
+      positionAbsolute:
+        x: 2741.9789723142444
+        y: 660.9156963850123
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        is_team_authorization: true
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: The name of the file search store to delete (e.g., fileSearchStores/abc123)
+            ja_JP: '削除するファイル検索ストア名（例: fileSearchStores/abc123）'
+            pt_BR: The name of the file search store to delete (e.g., fileSearchStores/abc123)
+            zh_Hans: 要删除的文件搜索存储名称（例如：fileSearchStores/abc123）
+          label:
+            en_US: Store Name
+            ja_JP: ストア名
+            pt_BR: Store Name
+            zh_Hans: 存储名称
+          llm_description: Store name to delete
+          max: null
+          min: null
+          name: file_search_store_name
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: 'Force deletion even if the store contains documents (default:
+              false)'
+            ja_JP: 'ドキュメントが含まれていても強制削除（デフォルト: false）'
+            pt_BR: 'Force deletion even if the store contains documents (default:
+              false)'
+            zh_Hans: 即使存储包含文档也强制删除（默认：false）
+          label:
+            en_US: Force Delete
+            ja_JP: 強制削除
+            pt_BR: Force Delete
+            zh_Hans: 强制删除
+          llm_description: Whether to force deletion
+          max: null
+          min: null
+          name: force
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: boolean
+        params:
+          file_search_store_name: ''
+          force: ''
+        plugin_id: r3-yamauchi/gemini_file_search
+        plugin_unique_identifier: r3-yamauchi/gemini_file_search:0.0.1@a9cf50b020b00b20f3b3f462d697f797517551d5d8bb8bf7ef078847080cabeb
+        provider_icon: https://cloud.dify.ai/console/api/workspaces/current/plugin/icon?tenant_id=7c8ea1f1-d371-448a-846c-af9a868d7d0f&filename=3f9d718ced2ecb925cbe752d6311f3966405463315b8e898110f0a8cca969899.svg
+        provider_id: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_name: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_type: builtin
+        selected: false
+        title: ファイル検索ストア削除
+        tool_configurations: {}
+        tool_description: ファイル検索ストアとそのインデックス化されたドキュメントを完全に削除します
+        tool_label: ファイル検索ストア削除
+        tool_name: delete_store
+        tool_node_version: '2'
+        tool_parameters:
+          file_search_store_name:
+            type: mixed
+            value: '{{#1766725010321.file_search_store_name#}}'
+          force:
+            type: constant
+            value: true
+        type: tool
+      height: 52
+      id: '1767932648362'
+      position:
+        x: 2079.243391663804
+        y: 851.3143713319118
+      positionAbsolute:
+        x: 2079.243391663804
+        y: 851.3143713319118
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        is_team_authorization: true
+        paramSchemas: []
+        params: {}
+        plugin_id: r3-yamauchi/gemini_file_search
+        plugin_unique_identifier: r3-yamauchi/gemini_file_search:0.0.1@a9cf50b020b00b20f3b3f462d697f797517551d5d8bb8bf7ef078847080cabeb
+        provider_icon: https://cloud.dify.ai/console/api/workspaces/current/plugin/icon?tenant_id=7c8ea1f1-d371-448a-846c-af9a868d7d0f&filename=3f9d718ced2ecb925cbe752d6311f3966405463315b8e898110f0a8cca969899.svg
+        provider_id: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_name: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_type: builtin
+        selected: false
+        title: ファイル検索ストア一覧
+        tool_configurations: {}
+        tool_description: プロジェクト内の全ファイル検索ストアを一覧表示します
+        tool_label: ファイル検索ストア一覧
+        tool_name: list_stores
+        tool_node_version: '2'
+        tool_parameters: {}
+        type: tool
+      height: 52
+      id: '1767932663680'
+      position:
+        x: 2356.393722927079
+        y: 851.3143713319118
+      positionAbsolute:
+        x: 2356.393722927079
+        y: 851.3143713319118
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        answer: '削除したファイル検索ストア名：{{#1767932648362.text#}}
+
+
+          残ったファイル検索ストア一覧：{{#1767932663680.text#}}'
+        selected: false
+        title: ファイル検索ストア削除＿回答
+        type: answer
+        variables: []
+      height: 136
+      id: '1767932682908'
+      position:
+        x: 2658.393722927079
+        y: 851.3143713319118
+      positionAbsolute:
+        x: 2658.393722927079
+        y: 851.3143713319118
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        is_team_authorization: true
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: File search store resource name (e.g., fileSearchStores/abc123)
+            ja_JP: 'ファイル検索ストアのリソース名（例: fileSearchStores/abc123）'
+            pt_BR: File search store resource name (e.g., fileSearchStores/abc123)
+            zh_Hans: 文件搜索存储资源名称（例如：fileSearchStores/abc123）
+          label:
+            en_US: Store Name
+            ja_JP: ストア名
+            pt_BR: Store Name
+            zh_Hans: 存储名称
+          llm_description: File search store containing the documents
+          max: null
+          min: null
+          name: file_search_store_name
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Optional page size (1-100). Defaults to the API setting.
+            ja_JP: オプションのページサイズ（1〜100）。未設定時はAPIデフォルト。
+            pt_BR: Optional page size (1-100). Defaults to the API setting.
+            zh_Hans: 可选页面大小（1-100）。未设置时使用API默认。
+          label:
+            en_US: Page Size
+            ja_JP: ページサイズ
+            pt_BR: Page Size
+            zh_Hans: 页面大小
+          llm_description: Optional page size limit (max 100)
+          max: null
+          min: null
+          name: page_size
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: number
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Provide the token from a previous response to fetch the next page
+            ja_JP: 前回レスポンスで受け取ったトークンを指定すると次ページを取得できます
+            pt_BR: Provide the token from a previous response to fetch the next page
+            zh_Hans: 提供上一次响应中的令牌以获取下一页
+          label:
+            en_US: Page Token
+            ja_JP: ページトークン
+            pt_BR: Page Token
+            zh_Hans: 页面令牌
+          llm_description: Page token for pagination
+          max: null
+          min: null
+          name: page_token
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        params:
+          file_search_store_name: ''
+          page_size: ''
+          page_token: ''
+        plugin_id: r3-yamauchi/gemini_file_search
+        plugin_unique_identifier: r3-yamauchi/gemini_file_search:0.0.1@a9cf50b020b00b20f3b3f462d697f797517551d5d8bb8bf7ef078847080cabeb
+        provider_icon: https://cloud.dify.ai/console/api/workspaces/current/plugin/icon?tenant_id=7c8ea1f1-d371-448a-846c-af9a868d7d0f&filename=3f9d718ced2ecb925cbe752d6311f3966405463315b8e898110f0a8cca969899.svg
+        provider_id: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_name: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_type: builtin
+        selected: false
+        title: ストア内のファイル一覧
+        tool_configurations: {}
+        tool_description: 現在のGeminiファイル検索ストアにインデックスされているドキュメントを一覧表示します
+        tool_label: ストア内のファイル一覧
+        tool_name: list_files
+        tool_node_version: '2'
+        tool_parameters:
+          file_search_store_name:
+            type: mixed
+            value: '{{#1766725010321.file_search_store_name#}}'
+          page_size:
+            type: constant
+            value: null
+          page_token:
+            type: mixed
+            value: null
+        type: tool
+      height: 52
+      id: '1767933183297'
+      position:
+        x: 1921.1091360664636
+        y: 953.6096753031504
+      positionAbsolute:
+        x: 1921.1091360664636
+        y: 953.6096753031504
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        is_team_authorization: true
+        paramSchemas: []
+        params: {}
+        plugin_id: r3-yamauchi/gemini_file_search
+        plugin_unique_identifier: r3-yamauchi/gemini_file_search:0.0.1@a9cf50b020b00b20f3b3f462d697f797517551d5d8bb8bf7ef078847080cabeb
+        provider_icon: https://cloud.dify.ai/console/api/workspaces/current/plugin/icon?tenant_id=7c8ea1f1-d371-448a-846c-af9a868d7d0f&filename=3f9d718ced2ecb925cbe752d6311f3966405463315b8e898110f0a8cca969899.svg
+        provider_id: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_name: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_type: builtin
+        selected: false
+        title: ファイル検索ストア一覧
+        tool_configurations: {}
+        tool_description: プロジェクト内の全ファイル検索ストアを一覧表示します
+        tool_label: ファイル検索ストア一覧
+        tool_name: list_stores
+        tool_node_version: '2'
+        tool_parameters: {}
+        type: tool
+      height: 52
+      id: '1767933198834'
+      position:
+        x: 1826.2285827080595
+        y: 1080.7546480111139
+      positionAbsolute:
+        x: 1826.2285827080595
+        y: 1080.7546480111139
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        answer: '{{#1768536588293.result#}}'
+        selected: false
+        title: ストア内のファイル一覧＿回答
+        type: answer
+        variables: []
+      height: 102
+      id: '1767933222748'
+      position:
+        x: 2889.8029176588766
+        y: 1080.7546480111139
+      positionAbsolute:
+        x: 2889.8029176588766
+        y: 1080.7546480111139
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        answer: ファイル検索ストア一覧：{{#1767933198834.text#}}
+        selected: false
+        title: ファイル検索ストア一覧＿回答
+        type: answer
+        variables: []
+      height: 118
+      id: '1767933256504'
+      position:
+        x: 2451.7901222419277
+        y: 1327.7847616191466
+      positionAbsolute:
+        x: 2451.7901222419277
+        y: 1327.7847616191466
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        answer: 'エラー発生
+
+          ファイルの拡張子の問題、または変数の指定違いなどが考えられます。'
+        selected: false
+        title: 回答 8
+        type: answer
+        variables: []
+      height: 116
+      id: '1768531376707'
+      position:
+        x: 1826.2285827080595
+        y: 1170.7546480111139
+      positionAbsolute:
+        x: 1826.2285827080595
+        y: 1170.7546480111139
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: not empty
+            id: f30b1b6e-9628-4faf-882f-59dcbf98f821
+            value: ''
+            varType: string
+            variable_selector:
+            - '1766725010321'
+            - metadata_company
+          - comparison_operator: not empty
+            id: 5eb8b196-aaa1-4726-9a65-16d2003ff2d9
+            value: ''
+            varType: string
+            variable_selector:
+            - '1766725010321'
+            - metadata_filetype
+          id: 'true'
+          logical_operator: and
+        selected: false
+        title: IF/ELSE 3
+        type: if-else
+      height: 150
+      id: '1768533032079'
+      position:
+        x: 2252.3553493949166
+        y: 471.0300621141257
+      positionAbsolute:
+        x: 2252.3553493949166
+        y: 471.0300621141257
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        answer: 'エラー発生。
+
+          ファイルをアップロードする際はすべてのメタデータを選択したうえでアップロードしてください。'
+        selected: false
+        title: 回答 9
+        type: answer
+        variables: []
+      height: 132
+      id: '1768533195948'
+      position:
+        x: 2991.3575195305057
+        y: 504.0330284206992
+      positionAbsolute:
+        x: 2991.3575195305057
+        y: 504.0330284206992
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        is_team_authorization: true
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: The name of the file search store to upload to (e.g., fileSearchStores/abc123)
+            ja_JP: 'アップロード先のファイル検索ストア名（例: fileSearchStores/abc123）'
+            pt_BR: The name of the file search store to upload to (e.g., fileSearchStores/abc123)
+            zh_Hans: 要上传到的文件搜索存储名称（例如：fileSearchStores/abc123）
+          label:
+            en_US: Store Name
+            ja_JP: ストア名
+            pt_BR: Store Name
+            zh_Hans: 存储名称
+          llm_description: Target file search store name in format fileSearchStores/xxx
+          max: null
+          min: null
+          name: file_search_store_name
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: The file to upload (PDF, TXT, DOCX, Markdown, etc.)
+            ja_JP: アップロードするファイル（PDF, TXT, DOCX, Markdown等）
+            pt_BR: The file to upload (PDF, TXT, DOCX, Markdown, etc.)
+            zh_Hans: 要上传的文件（PDF、TXT、DOCX、Markdown等）
+          label:
+            en_US: File
+            ja_JP: ファイル
+            pt_BR: File
+            zh_Hans: 文件
+          llm_description: File to upload and index
+          max: null
+          min: null
+          name: file
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: file
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Unique file name that will be visible in citations (required)
+            ja_JP: 出典に表示される一意のファイル名（必須）
+            pt_BR: Unique file name that will be visible in citations (required)
+            zh_Hans: 在引用中可见的唯一文件名（必需）
+          label:
+            en_US: Display Name
+            ja_JP: 表示名
+            pt_BR: Display Name
+            zh_Hans: 显示名称
+          llm_description: Display name for the file (used in citations)
+          max: null
+          min: null
+          name: display_name
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Optional metadata as JSON array, e.g. [{"key":"author","string_value":"John"}]
+            ja_JP: オプションのメタデータ（JSON配列）、例：[{"key":"author","string_value":"John"}]
+            pt_BR: Optional metadata as JSON array, e.g. [{"key":"author","string_value":"John"}]
+            zh_Hans: 可选元数据（JSON数组），例如：[{"key":"author","string_value":"John"}]
+          label:
+            en_US: Custom Metadata (JSON)
+            ja_JP: カスタムメタデータ（JSON）
+            pt_BR: Custom Metadata (JSON)
+            zh_Hans: 自定义元数据（JSON）
+          llm_description: Optional custom metadata for filtering (JSON array format)
+          max: null
+          min: null
+          name: custom_metadata
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Maximum number of tokens per chunk (default uses Gemini's automatic
+              setting)
+            ja_JP: チャンクあたりの最大トークン数（デフォルトはGeminiの自動設定を使用）
+            pt_BR: Maximum number of tokens per chunk (default uses Gemini's automatic
+              setting)
+            zh_Hans: 每个块的最大令牌数（默认使用Gemini的自动设置）
+          label:
+            en_US: Max Tokens Per Chunk
+            ja_JP: チャンクあたりの最大トークン数
+            pt_BR: Max Tokens Per Chunk
+            zh_Hans: 每块最大令牌数
+          llm_description: Optional max tokens per chunk for custom chunking
+          max: null
+          min: null
+          name: max_tokens_per_chunk
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: number
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Maximum number of overlapping tokens between chunks (default uses
+              Gemini's automatic setting)
+            ja_JP: チャンク間の最大重複トークン数（デフォルトはGeminiの自動設定を使用）
+            pt_BR: Maximum number of overlapping tokens between chunks (default uses
+              Gemini's automatic setting)
+            zh_Hans: 块之间的最大重叠令牌数（默认使用Gemini的自动设置）
+          label:
+            en_US: Max Overlap Tokens
+            ja_JP: 最大重複トークン数
+            pt_BR: Max Overlap Tokens
+            zh_Hans: 最大重叠令牌数
+          llm_description: Optional max overlap tokens for custom chunking
+          max: null
+          min: null
+          name: max_overlap_tokens
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: number
+        params:
+          custom_metadata: ''
+          display_name: ''
+          file: ''
+          file_search_store_name: ''
+          max_overlap_tokens: ''
+          max_tokens_per_chunk: ''
+        plugin_id: r3-yamauchi/gemini_file_search
+        plugin_unique_identifier: r3-yamauchi/gemini_file_search:0.0.1@a9cf50b020b00b20f3b3f462d697f797517551d5d8bb8bf7ef078847080cabeb
+        provider_icon: https://cloud.dify.ai/console/api/workspaces/current/plugin/icon?tenant_id=7c8ea1f1-d371-448a-846c-af9a868d7d0f&filename=3f9d718ced2ecb925cbe752d6311f3966405463315b8e898110f0a8cca969899.svg
+        provider_id: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_name: r3-yamauchi/gemini_file_search/gemini_file_search
+        provider_type: builtin
+        selected: false
+        title: ファイルをストアにアップロード
+        tool_configurations: {}
+        tool_description: ファイルを直接ファイル検索ストアにアップロード・インポートし、自動的にチャンク化とインデックス化を行います
+        tool_label: ファイルをストアにアップロード
+        tool_name: upload_file
+        tool_node_version: '2'
+        tool_parameters:
+          custom_metadata:
+            type: mixed
+            value: '[{"key":"company","string_value":"{{#1766725010321.metadata_company#}}"},{"key":"department","string_value":"{{#1766725010321.metadata_department#}}"},{"key":"filetype","string_value":"{{#1766725010321.metadata_filetype#}}"}]'
+          display_name:
+            type: mixed
+            value: '{{#1766725010321.display_name#}}'
+          file:
+            type: variable
+            value:
+            - '1766725010321'
+            - file
+          file_search_store_name:
+            type: mixed
+            value: '{{#1766725010321.file_search_store_name#}}'
+          max_overlap_tokens:
+            type: constant
+            value: null
+          max_tokens_per_chunk:
+            type: constant
+            value: null
+        type: tool
+      height: 52
+      id: '1768533280265'
+      position:
+        x: 3030.675023880695
+        y: 399.40092798910996
+      positionAbsolute:
+        x: 3030.675023880695
+        y: 399.40092798910996
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        code: "import json\n\ndef main(arg1):\n    try:\n        data_root = arg1[0]\n\
+          \        docs = data_root.get('documents', [])\n        store_name = data_root.get('store_name',\
+          \ 'N/A')\n        total_count = data_root.get('count', len(docs))\n    except\
+          \ (IndexError, AttributeError):\n        return {\"result\": \"データの取得に失敗しました。\"\
+          }\n\n    lines = []\n    lines.append(f\"**ファイル検索ストア名**: {store_name}\"\
+          )\n    lines.append(f\"**ドキュメントの総数**: {total_count}\")\n    lines.append(\"\
+          \\n---\\n\") # 冒頭に区切り線\n\n    for doc in docs:\n        display_name = doc.get('display_name',\
+          \ 'N/A')\n        create_time = doc.get('create_time', 'N/A')\n        mime_type\
+          \ = doc.get('mime_type', 'N/A')\n        internal_name = doc.get('name',\
+          \ 'N/A')\n        size = doc.get('size_bytes', 'N/A')\n        state = doc.get('state',\
+          \ 'N/A')\n\n        # カスタムメタデータの処理（項目ごとに改行）\n        custom_meta = doc.get('custom_metadata',\
+          \ [])\n        meta_formatted = \"\"\n        if isinstance(custom_meta,\
+          \ list) and len(custom_meta) > 0:\n            for m in custom_meta:\n \
+          \               k = m.get('key', '')\n                v = m.get('string_value',\
+          \ '')\n                if k:\n                    # メタデータの項目も太字にし、各項目の後に改行を入れる\n\
+          \                    meta_formatted += f\"\\n   - **{k}**: {v}\"\n     \
+          \   else:\n            meta_formatted = \" なし\"\n\n        # 各情報を組み立て（属性名のみ太字）\n\
+          \        item_text = (\n            f\"**ファイル名**: {display_name}\\n\"\n\
+          \            f\"**作成日時**: {create_time}\\n\"\n            f\"**ファイル形式**:\
+          \ {mime_type}\\n\"\n            f\"**ファイル名 (内部ID)**: {internal_name}\\n\"\
+          \n            f\"**ファイルサイズ**: {size}\\n\"\n            f\"**状態**: {state}\\\
+          n\"\n            f\"**カスタムメタデータ**:{meta_formatted}\\n\"\n            f\"\
+          \\n---\\n\" # 区切り線の前後にしっかり改行を入れる\n        )\n        lines.append(item_text)\n\
+          \n    return {\n        \"result\": \"\\n\".join(lines)\n    }"
+        code_language: python3
+        desc: ファイルの詳細情報取得のためのコードノード。ストア内のファイル一覧ノードにおけるjsonファイルは回答ノードに直接表示させることができないため、このノードにおいてそれを実現させる
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: コード実行
+        type: code
+        variables:
+        - value_selector:
+          - '1767933183297'
+          - json
+          value_type: array[object]
+          variable: arg1
+      height: 128
+      id: '1768536588293'
+      position:
+        x: 2521.148579609257
+        y: 1004.5841431905221
+      positionAbsolute:
+        x: 2521.148579609257
+        y: 1004.5841431905221
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    viewport:
+      x: -2111.497745131958
+      y: -201.32177692598538
+      zoom: 0.9999999999999999
+  rag_pipeline_variables: []

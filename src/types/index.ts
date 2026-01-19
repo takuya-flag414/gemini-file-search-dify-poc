@@ -1,0 +1,239 @@
+/**
+ * Type definitions for Gemini File Search PoC
+ */
+
+// ============================================
+// App Configuration Types
+// ============================================
+
+export interface AppConfig {
+    apiKey: string;
+    baseUrl: string;
+    userName: string;
+}
+
+export const DEFAULT_CONFIG: AppConfig = {
+    apiKey: '',
+    baseUrl: 'https://api.dify.ai/v1',
+    userName: 'poc-verifier',
+};
+
+// ============================================
+// Workflow Input Types
+// ============================================
+
+export type OperationMode =
+    | 'ファイル内を検索する'
+    | 'ファイルをアップロードする？'
+    | 'ファイル検索ストアを作成する？'
+    | 'ファイルを削除する？'
+    | 'ファイル検索ストアを削除する？'
+    | 'ファイル検索ストアの一覧を表示する？'
+    | 'ストア内のファイルの一覧を表示する？';
+
+export const OPERATION_MODES: { value: OperationMode; label: string; requiresStoreName: boolean; requiresFile: boolean; isDangerous: boolean }[] = [
+    { value: 'ファイル内を検索する', label: 'ファイル内を検索する', requiresStoreName: true, requiresFile: false, isDangerous: false },
+    { value: 'ファイルをアップロードする？', label: 'ファイルをアップロードする', requiresStoreName: true, requiresFile: true, isDangerous: false },
+    { value: 'ファイル検索ストアを作成する？', label: 'ファイル検索ストアを作成する', requiresStoreName: false, requiresFile: false, isDangerous: false },
+    { value: 'ファイルを削除する？', label: 'ファイルを削除する', requiresStoreName: true, requiresFile: false, isDangerous: true },
+    { value: 'ファイル検索ストアを削除する？', label: 'ファイル検索ストアを削除する', requiresStoreName: true, requiresFile: false, isDangerous: true },
+    { value: 'ファイル検索ストアの一覧を表示する？', label: 'ファイル検索ストアの一覧を表示', requiresStoreName: false, requiresFile: false, isDangerous: false },
+    { value: 'ストア内のファイルの一覧を表示する？', label: 'ストア内のファイル一覧を表示', requiresStoreName: true, requiresFile: false, isDangerous: false },
+];
+
+export interface FileInput {
+    type: 'document';
+    transfer_method: 'local_file' | 'remote_url';
+    upload_file_id?: string;
+    url?: string;
+}
+
+export interface WorkflowInputs {
+    option: OperationMode;
+    file_search_store_name?: string;
+    display_name?: string;
+    document_id?: string;
+    file?: FileInput;
+    metadata_company?: string;
+    metadata_department?: string;
+    metadata_filetype?: string;
+}
+
+// Metadata options from workflow
+export const METADATA_OPTIONS = {
+    company: ['アイフラッグ', 'EPARKリラク＆エステ', 'EPARKペットライフ'],
+    department: ['営業', 'マーケティング・広告', '開発', '運用', 'コンタクトセンター', 'その他'],
+    filetype: ['会社規定', '議事録', '手引書', 'その他'],
+};
+
+// ============================================
+// Chat Message Types
+// ============================================
+
+export interface Citation {
+    position: number;
+    dataset_id: string;
+    dataset_name: string;
+    document_id: string;
+    document_name: string;
+    segment_id: string;
+    score: number;
+    content: string;
+}
+
+export interface ChatMessage {
+    id: string;
+    role: 'user' | 'assistant';
+    content: string;
+    citations?: Citation[];
+    timestamp: number;
+    isStreaming?: boolean;
+    thinkingSteps?: string[];
+}
+
+// ============================================
+// Log Entry Types
+// ============================================
+
+export type LogEntryType = 'request' | 'response' | 'system' | 'error' | 'node';
+
+export interface LogEntry {
+    id: string;
+    timestamp: number;
+    type: LogEntryType;
+    title: string;
+    data: unknown;
+}
+
+// ============================================
+// Dify API Event Types
+// ============================================
+
+export interface DifyBaseEvent {
+    event: string;
+    task_id?: string;
+    message_id?: string;
+    conversation_id?: string;
+}
+
+export interface DifyMessageEvent extends DifyBaseEvent {
+    event: 'message';
+    answer: string;
+    created_at: number;
+}
+
+export interface DifyMessageEndEvent extends DifyBaseEvent {
+    event: 'message_end';
+    metadata?: {
+        usage?: {
+            prompt_tokens: number;
+            completion_tokens: number;
+            total_tokens: number;
+            total_price: string;
+            currency: string;
+            latency: number;
+        };
+        retriever_resources?: Citation[];
+    };
+}
+
+export interface DifyWorkflowStartedEvent extends DifyBaseEvent {
+    event: 'workflow_started';
+    workflow_run_id: string;
+    data: {
+        id: string;
+        workflow_id: string;
+        created_at: number;
+    };
+}
+
+export interface DifyNodeStartedEvent extends DifyBaseEvent {
+    event: 'node_started';
+    workflow_run_id: string;
+    data: {
+        id: string;
+        node_id: string;
+        node_type: string;
+        title: string;
+        index: number;
+        predecessor_node_id?: string;
+        inputs?: Record<string, unknown>;
+        created_at: number;
+    };
+}
+
+export interface DifyNodeFinishedEvent extends DifyBaseEvent {
+    event: 'node_finished';
+    workflow_run_id: string;
+    data: {
+        id: string;
+        node_id: string;
+        node_type: string;
+        title: string;
+        index: number;
+        predecessor_node_id?: string;
+        inputs?: Record<string, unknown>;
+        outputs?: Record<string, unknown>;
+        status: 'running' | 'succeeded' | 'failed' | 'stopped';
+        error?: string;
+        elapsed_time?: number;
+        execution_metadata?: {
+            total_tokens?: number;
+            total_price?: string;
+            currency?: string;
+        };
+        created_at: number;
+    };
+}
+
+export interface DifyErrorEvent extends DifyBaseEvent {
+    event: 'error';
+    status: number;
+    code: string;
+    message: string;
+}
+
+export type DifyStreamEvent =
+    | DifyMessageEvent
+    | DifyMessageEndEvent
+    | DifyWorkflowStartedEvent
+    | DifyNodeStartedEvent
+    | DifyNodeFinishedEvent
+    | DifyErrorEvent
+    | { event: 'ping' };
+
+// ============================================
+// File Upload Types
+// ============================================
+
+export interface UploadedFile {
+    id: string;
+    name: string;
+    size: number;
+    extension: string;
+    mime_type: string;
+    created_at: number;
+}
+
+// ============================================
+// History Types
+// ============================================
+
+export interface HistoryEntry {
+    id: string;
+    timestamp: number;
+    inputs: WorkflowInputs;
+    query?: string;
+    response: string;
+    logs: LogEntry[];
+    conversationId?: string;
+}
+
+// ============================================
+// App State
+// ============================================
+
+export interface AppState {
+    config: AppConfig;
+    history: HistoryEntry[];
+}
