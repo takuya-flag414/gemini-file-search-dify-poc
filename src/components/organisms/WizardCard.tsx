@@ -108,6 +108,8 @@ export function WizardCard({
                 transfer_method: 'local_file',
                 upload_file_id: currentFileId,
             };
+            // display_name is required for file upload
+            inputs.display_name = uploadedFileName || 'uploaded_file';
             if (metadataCompany) inputs.metadata_company = metadataCompany;
             if (metadataDepartment) inputs.metadata_department = metadataDepartment;
             if (metadataFiletype) inputs.metadata_filetype = metadataFiletype;
