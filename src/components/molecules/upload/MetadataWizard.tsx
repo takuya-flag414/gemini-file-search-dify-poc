@@ -6,7 +6,7 @@
 
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ArrowLeft, ArrowRight, Upload, FileText, Building2, Users, FolderOpen, Check } from 'lucide-react';
+import { X, ArrowLeft, ArrowRight, Upload, Building2, Users, FolderOpen, Check } from 'lucide-react';
 import { WizardProgress } from './WizardProgress';
 import { WizardStep } from './WizardStep';
 import { FileDropZone } from '../FileDropZone';

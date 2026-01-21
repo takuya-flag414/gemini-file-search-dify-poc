@@ -20,18 +20,10 @@ import {
 // ============================================
 
 export class MockApiClient {
-    // These fields are kept for interface compatibility with DifyApiClient
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    private _baseUrl: string;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    private _apiKey: string;
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    private _userId: string;
-
-    constructor(baseUrl: string, apiKey: string, userId: string = 'mock-user') {
-        this._baseUrl = baseUrl;
-        this._apiKey = apiKey;
-        this._userId = userId;
+    // Constructor accepts same parameters as DifyApiClient for interface compatibility
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
+    constructor(_baseUrl: string, _apiKey: string, _userId: string = 'mock-user') {
+        // Parameters intentionally unused - this is a mock client
     }
 
     // ============================================
