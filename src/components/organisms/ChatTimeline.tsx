@@ -1,3 +1,4 @@
+import { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -15,6 +16,39 @@ interface ChatTimelineProps {
 }
 
 export function ChatTimeline({ messages, thinkingSteps }: ChatTimelineProps) {
+    const scrollRef = useRef<HTMLDivElement>(null);
+    const bottomRef = useRef<HTMLDivElement>(null);
+    const [isAutoScrollEnabled, setIsAutoScrollEnabled] = useState(true);
+
+    // Scroll to bottom helper
+    const scrollToBottom = () => {
+        if (bottomRef.current) {
+            bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
+    // Handle scroll events to detect manual scrolling
+    const handleScroll = () => {
+        if (!scrollRef.current) return;
+
+        const { scrollTop, scrollHeight, clientHeight } = scrollRef.current;
+        const isAtBottom = scrollHeight - scrollTop - clientHeight < 100; // Threshold 100px
+
+        // Determine if user is manually scrolling up
+        if (isAtBottom) {
+            setIsAutoScrollEnabled(true);
+        } else {
+            setIsAutoScrollEnabled(false);
+        }
+    };
+
+    // Auto-scroll effect
+    useEffect(() => {
+        if (isAutoScrollEnabled) {
+            scrollToBottom();
+        }
+    }, [messages, thinkingSteps, isAutoScrollEnabled]);
+
     if (messages.length === 0 && !thinkingSteps?.length) {
         return (
             <div className="flex-1 flex items-center justify-center p-8">
@@ -28,7 +62,11 @@ export function ChatTimeline({ messages, thinkingSteps }: ChatTimelineProps) {
     }
 
     return (
-        <div className="flex-1 p-6 space-y-4 overflow-y-auto">
+        <div
+            ref={scrollRef}
+            onScroll={handleScroll}
+            className="flex-1 p-6 space-y-4 overflow-y-auto scroll-smooth"
+        >
             <AnimatePresence initial={false}>
                 {messages.map((message) => (
                     <motion.div
@@ -76,6 +114,9 @@ export function ChatTimeline({ messages, thinkingSteps }: ChatTimelineProps) {
                     </div>
                 </motion.div>
             )}
+
+            {/* Invisible element to scroll to */}
+            <div ref={bottomRef} className="h-1" />
         </div>
     );
 }
@@ -128,7 +169,21 @@ function MessageBlock({ message }: MessageBlockProps) {
                 ) : (
                     <>
                         <div className="prose prose-sm max-w-none dark:prose-invert">
-                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                            <ReactMarkdown
+                                remarkPlugins={[remarkGfm]}
+                                components={{
+                                    // Wrap tables in a scrollable container
+                                    table: ({ children, ...props }) => (
+                                        <div className="overflow-x-auto -mx-1 px-1">
+                                            <table {...props}>{children}</table>
+                                        </div>
+                                    ),
+                                    // Wrap pre/code blocks in a scrollable container
+                                    pre: ({ children, ...props }) => (
+                                        <pre className="overflow-x-auto" {...props}>{children}</pre>
+                                    ),
+                                }}
+                            >
                                 {message.content}
                             </ReactMarkdown>
                         </div>

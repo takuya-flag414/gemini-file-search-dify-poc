@@ -13,6 +13,9 @@ interface AppContextValue {
     updateConfig: (config: Partial<AppConfig>) => void;
     isConfigured: boolean;
 
+    // Mock Mode
+    toggleMockMode: () => void;
+
     // History
     history: HistoryEntry[];
     addHistoryEntry: (entry: HistoryEntry) => void;
@@ -25,6 +28,24 @@ interface AppContextValue {
     // Inspector
     isInspectorOpen: boolean;
     toggleInspector: () => void;
+
+    // Chat Panel
+    isChatPanelOpen: boolean;
+    toggleChatPanel: () => void;
+    openChatPanel: () => void;
+    isChatExpanded: boolean;
+    toggleChatExpanded: () => void;
+
+    // Selected Store (Context Injection)
+    selectedStoreId: string | null;
+    selectedStoreName: string | null;
+    setSelectedStore: (storeId: string | null, storeName: string | null) => void;
+    clearSelectedStore: () => void;
+
+    // Session Conversation (Chat Continuity)
+    sessionConversationId: string | null;
+    setSessionConversationId: (id: string | null) => void;
+    clearSessionConversation: () => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -37,6 +58,7 @@ const STORAGE_KEYS = {
     CONFIG: 'dify_app_config_v1',
     HISTORY: 'dify_app_history_v1',
     DARK_MODE: 'dify_app_dark_mode',
+    SESSION_CONVERSATION_ID: 'dify_session_conversation_id',
 };
 
 // ============================================
@@ -91,6 +113,24 @@ export function AppProvider({ children }: AppProviderProps) {
     // Inspector State
     const [isInspectorOpen, setIsInspectorOpen] = useState(true);
 
+    // Chat Panel State
+    const [isChatPanelOpen, setIsChatPanelOpen] = useState(false);
+    const [isChatExpanded, setIsChatExpanded] = useState(false);
+
+    // Selected Store State (Context Injection)
+    const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null);
+    const [selectedStoreName, setSelectedStoreName] = useState<string | null>(null);
+
+    // Session Conversation State (Chat Continuity)
+    const [sessionConversationId, setSessionConversationIdState] = useState<string | null>(() => {
+        try {
+            const stored = sessionStorage.getItem(STORAGE_KEYS.SESSION_CONVERSATION_ID);
+            return stored || null;
+        } catch {
+            return null;
+        }
+    });
+
     // Apply dark mode class to document
     useEffect(() => {
         if (isDarkMode) {
@@ -139,10 +179,67 @@ export function AppProvider({ children }: AppProviderProps) {
         setIsInspectorOpen(prev => !prev);
     }, []);
 
+    // Toggle chat panel
+    const toggleChatPanel = useCallback(() => {
+        setIsChatPanelOpen(prev => !prev);
+    }, []);
+
+    // Open chat panel (for workflow execution)
+    const openChatPanel = useCallback(() => {
+        setIsChatPanelOpen(true);
+    }, []);
+
+    // Toggle chat expanded
+    const toggleChatExpanded = useCallback(() => {
+        setIsChatExpanded(prev => !prev);
+    }, []);
+
+    // Toggle mock mode
+    const toggleMockMode = useCallback(() => {
+        setConfig(prev => ({ ...prev, mockMode: !prev.mockMode }));
+    }, []);
+
+    // Set selected store
+    const setSelectedStore = useCallback((storeId: string | null, storeName: string | null) => {
+        setSelectedStoreId(storeId);
+        setSelectedStoreName(storeName);
+    }, []);
+
+    // Clear selected store
+    const clearSelectedStore = useCallback(() => {
+        setSelectedStoreId(null);
+        setSelectedStoreName(null);
+    }, []);
+
+    // Set session conversation ID
+    const setSessionConversationId = useCallback((id: string | null) => {
+        setSessionConversationIdState(id);
+        try {
+            if (id) {
+                sessionStorage.setItem(STORAGE_KEYS.SESSION_CONVERSATION_ID, id);
+            } else {
+                sessionStorage.removeItem(STORAGE_KEYS.SESSION_CONVERSATION_ID);
+            }
+        } catch (e) {
+            console.warn('Failed to save session conversation ID to sessionStorage:', e);
+        }
+    }, []);
+
+    // Clear session conversation (start new conversation)
+    const clearSessionConversation = useCallback(() => {
+        setSessionConversationIdState(null);
+        try {
+            sessionStorage.removeItem(STORAGE_KEYS.SESSION_CONVERSATION_ID);
+        } catch (e) {
+            console.warn('Failed to clear session conversation ID from sessionStorage:', e);
+        }
+    }, []);
+
     const value: AppContextValue = {
         config,
         updateConfig,
         isConfigured,
+        toggleMockMode,
         history,
         addHistoryEntry,
         clearHistory,
@@ -150,6 +247,18 @@ export function AppProvider({ children }: AppProviderProps) {
         toggleDarkMode,
         isInspectorOpen,
         toggleInspector,
+        isChatPanelOpen,
+        toggleChatPanel,
+        openChatPanel,
+        isChatExpanded,
+        toggleChatExpanded,
+        selectedStoreId,
+        selectedStoreName,
+        setSelectedStore,
+        clearSelectedStore,
+        sessionConversationId,
+        setSessionConversationId,
+        clearSessionConversation,
     };
 
     return (

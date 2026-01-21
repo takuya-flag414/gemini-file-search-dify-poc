@@ -182,6 +182,20 @@ export class DifyApiClient {
 // Factory Function
 // ============================================
 
-export function createDifyClient(baseUrl: string, apiKey: string, userId?: string): DifyApiClient {
+import { MockApiClient, createMockClient } from './MockApiClient';
+
+// Common interface type for both clients
+export type ApiClient = DifyApiClient | MockApiClient;
+
+export function createDifyClient(
+    baseUrl: string,
+    apiKey: string,
+    userId?: string,
+    mockMode: boolean = false
+): ApiClient {
+    if (mockMode) {
+        return createMockClient(baseUrl, apiKey, userId);
+    }
     return new DifyApiClient(baseUrl, apiKey, userId);
 }
+

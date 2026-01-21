@@ -11,10 +11,9 @@ import { Badge } from '../atoms';
 
 interface InspectorPanelProps {
     logs: LogEntry[];
-    isGlowing?: boolean;
 }
 
-export function InspectorPanel({ logs, isGlowing = false }: InspectorPanelProps) {
+export function InspectorPanel({ logs }: InspectorPanelProps) {
     const { isInspectorOpen, toggleInspector } = useApp();
 
     if (!isInspectorOpen) {
@@ -27,10 +26,7 @@ export function InspectorPanel({ logs, isGlowing = false }: InspectorPanelProps)
             animate={{ width: 320, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 250, damping: 25 }}
-            className={`
-        h-full flex flex-col glass-hud border-l border-sys-separator
-        ${isGlowing ? 'ai-glowing-border' : ''}
-      `}
+            className="h-full flex flex-col glass-hud border-l border-sys-separator"
         >
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3 border-b border-sys-separator">

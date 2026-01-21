@@ -10,12 +10,14 @@ export interface AppConfig {
     apiKey: string;
     baseUrl: string;
     userName: string;
+    mockMode: boolean;
 }
 
 export const DEFAULT_CONFIG: AppConfig = {
     apiKey: '',
     baseUrl: 'https://api.dify.ai/v1',
     userName: 'poc-verifier',
+    mockMode: false,
 };
 
 // ============================================
@@ -237,3 +239,50 @@ export interface AppState {
     config: AppConfig;
     history: HistoryEntry[];
 }
+
+// ============================================
+// Phase A: File System Types (Dual Backend)
+// ============================================
+
+/**
+ * Represents a Gemini File Search Store
+ * Used in Phase A (Mock) and Phase B (Real API)
+ */
+export type FileSearchStore = {
+    storeName: string;      // e.g. "fileSearchStores/abc12345"
+    displayName: string;    // e.g. "Product Specs 2024"
+    createdAt: string;
+};
+
+/**
+ * Represents a file stored in a FileSearchStore
+ */
+export type StoredFile = {
+    documentId: string;     // Internal ID or resource name
+    displayName: string;
+    mimeType: string;
+    sizeBytes: number;
+    createTime: string;
+    state: 'ACTIVE' | 'PROCESSING' | 'FAILED';
+    customMetadata: Record<string, string | number>;
+};
+
+/**
+ * Workflow Execution Response from Backend B
+ */
+export type WorkflowResponse<T> = {
+    status: 'succeeded' | 'failed';
+    data: {
+        result: T;
+    };
+};
+
+/**
+ * View mode for Knowledge Finder
+ */
+export type FinderViewMode = 'grid' | 'list';
+
+/**
+ * App view mode - Chat or Finder
+ */
+export type AppViewMode = 'chat' | 'finder';

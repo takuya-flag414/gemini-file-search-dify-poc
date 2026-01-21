@@ -40,7 +40,7 @@ function generateId(): string {
 // ============================================
 
 export function useDifyStream(): UseDifyStreamReturn {
-    const { config, addHistoryEntry } = useApp();
+    const { config, addHistoryEntry, sessionConversationId, setSessionConversationId } = useApp();
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [logs, setLogs] = useState<LogEntry[]>([]);
     const [thinkingSteps, setThinkingSteps] = useState<string[]>([]);
@@ -64,17 +64,19 @@ export function useDifyStream(): UseDifyStreamReturn {
 
     // Upload file
     const uploadFile = useCallback(async (file: File): Promise<string | null> => {
-        if (!config.apiKey) {
+        // Skip API key check if mock mode is enabled
+        if (!config.mockMode && !config.apiKey) {
             setError('API Key が設定されていません');
             return null;
         }
 
         try {
-            const client = createDifyClient(config.baseUrl, config.apiKey);
-            addLog('request', `ファイルアップロード: ${file.name}`, {
+            const client = createDifyClient(config.baseUrl, config.apiKey, undefined, config.mockMode);
+            addLog('request', `ファイルアップロード: ${file.name}${config.mockMode ? ' [Mock]' : ''}`, {
                 name: file.name,
                 size: file.size,
                 type: file.type,
+                mockMode: config.mockMode,
             });
 
             const result = await client.uploadFile(file);
@@ -91,7 +93,8 @@ export function useDifyStream(): UseDifyStreamReturn {
 
     // Send message
     const sendMessage = useCallback(async (inputs: WorkflowInputs, query: string) => {
-        if (!config.apiKey) {
+        // Skip API key check if mock mode is enabled
+        if (!config.mockMode && !config.apiKey) {
             setError('API Key が設定されていません');
             return;
         }
@@ -127,12 +130,12 @@ export function useDifyStream(): UseDifyStreamReturn {
         setMessages(prev => [...prev, assistantMessage]);
 
         try {
-            const client = createDifyClient(config.baseUrl, config.apiKey);
+            const client = createDifyClient(config.baseUrl, config.apiKey, undefined, config.mockMode);
             let fullContent = '';
             let citations: ChatMessage['citations'] = [];
             let conversationId: string | undefined;
 
-            for await (const event of client.sendChatMessage(inputs, query)) {
+            for await (const event of client.sendChatMessage(inputs, query, sessionConversationId || undefined)) {
                 // Handle different event types
                 switch (event.event) {
                     case 'message': {
@@ -150,6 +153,11 @@ export function useDifyStream(): UseDifyStreamReturn {
                     case 'message_end': {
                         const endEvent = event as DifyMessageEndEvent;
                         conversationId = endEvent.conversation_id;
+
+                        // Save conversation ID for session continuity
+                        if (conversationId) {
+                            setSessionConversationId(conversationId);
+                        }
 
                         if (endEvent.metadata?.retriever_resources) {
                             citations = endEvent.metadata.retriever_resources;
@@ -221,7 +229,7 @@ export function useDifyStream(): UseDifyStreamReturn {
             setIsProcessing(false);
             currentMessageIdRef.current = null;
         }
-    }, [config, addLog, addHistoryEntry, logs]);
+    }, [config, addLog, addHistoryEntry, logs, sessionConversationId, setSessionConversationId]);
 
     // Clear messages
     const clearMessages = useCallback(() => {

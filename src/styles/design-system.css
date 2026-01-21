@@ -38,7 +38,19 @@
 
   /* === Immersive Background === */
   --immersive-bg: linear-gradient(135deg, #f5f5f7 0%, #e8e8ed 100%);
+
+  /* === Apple Intelligence Gradient (Phase A) === */
+  --ai-gradient-cyan: #00FFFF;
+  --ai-gradient-magenta: #FF00FF;
+  --ai-gradient-yellow: #FFD60A;
+  --ai-gradient-blue: #007AFF;
+
+  /* === Finder Card Colors === */
+  --finder-card-bg: rgba(255, 255, 255, 0.5);
+  --finder-card-hover: rgba(255, 255, 255, 0.7);
+  --finder-card-border: rgba(0, 0, 0, 0.06);
 }
+
 
 /* Dark Mode */
 .dark {
@@ -64,6 +76,11 @@
   --mat-popover: rgba(38, 38, 40, 0.72);
 
   --immersive-bg: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);
+
+  /* === Finder Card Colors (Dark) === */
+  --finder-card-bg: rgba(44, 44, 46, 0.5);
+  --finder-card-hover: rgba(58, 58, 60, 0.7);
+  --finder-card-border: rgba(255, 255, 255, 0.06);
 }
 
 /* === Immersive Window Container === */
@@ -121,6 +138,66 @@
     background-position: -200% 0;
   }
 }
+
+/* === AI Glow Spin Animation (for DropZone) === */
+@keyframes ai-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* === DropZone Overlay Glow === */
+.dropzone-glow {
+  position: relative;
+  isolation: isolate;
+}
+
+.dropzone-glow::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  background: conic-gradient(from 0deg,
+      var(--ai-gradient-cyan),
+      var(--ai-gradient-magenta),
+      var(--ai-gradient-yellow),
+      var(--ai-gradient-blue),
+      var(--ai-gradient-cyan));
+  filter: blur(12px);
+  z-index: -1;
+  border-radius: inherit;
+  opacity: 0.7;
+  animation: ai-spin 4s linear infinite;
+}
+
+/* === Finder File Card === */
+.finder-card {
+  background: var(--finder-card-bg);
+  border: 1px solid var(--finder-card-border);
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.finder-card:hover {
+  background: var(--finder-card-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* === Finder List Item === */
+.finder-list-item {
+  background: transparent;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.finder-list-item:hover {
+  background: var(--finder-card-bg);
+}
+
 
 /* === Glass Material Mixins === */
 .glass-sidebar {
@@ -262,4 +339,34 @@
   line-height: 1.3;
   letter-spacing: 0.03em;
   font-weight: 500;
+}
+
+/* === Chat Input Glow (Apple Intelligence Style) === */
+.ai-input-glow {
+  position: relative;
+  isolation: isolate;
+}
+
+.ai-input-glow::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  background: conic-gradient(
+    from 0deg,
+    var(--ai-gradient-cyan),
+    var(--ai-gradient-magenta),
+    var(--ai-gradient-yellow),
+    var(--ai-gradient-blue),
+    var(--ai-gradient-cyan)
+  );
+  filter: blur(8px);
+  z-index: -1;
+  border-radius: inherit;
+  opacity: 0.4;
+  animation: ai-spin 4s linear infinite;
+}
+
+.ai-input-glow:focus-within::before {
+  opacity: 0.6;
+  filter: blur(10px);
 }
