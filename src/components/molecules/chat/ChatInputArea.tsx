@@ -88,7 +88,7 @@ export function ChatInputArea({ onSubmit, isProcessing = false }: ChatInputAreaP
                     onKeyDown={handleKeyDown}
                     placeholder={
                         selectedStoreId
-                            ? "検索したい内容..."
+                            ? "③ 指示を入力..."
                             : "サイドバーでストアを選択してください"
                     }
                     disabled={!selectedStoreId || isProcessing}

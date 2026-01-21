@@ -54,7 +54,7 @@ export function KnowledgeStoresSection({
 
     return (
         <SidebarSection
-            title="Knowledge Stores"
+            title="① ストア選択"
             icon={<Database className="w-4 h-4 text-action-primary" />}
             isOpen={isOpen}
             onToggle={onToggle}

@@ -129,6 +129,8 @@ interface ToolbarProps {
 }
 
 function Toolbar({ onToggleChatPanel, isChatPanelOpen, onToggleInspector, isInspectorOpen }: ToolbarProps) {
+    const { selectedStoreName } = useApp();
+
     return (
         <header className="h-toolbar flex items-center justify-between px-4 border-b border-sys-separator glass-header">
             <div className="flex items-center gap-3">
@@ -142,15 +144,20 @@ function Toolbar({ onToggleChatPanel, isChatPanelOpen, onToggleInspector, isInsp
                 <button
                     onClick={onToggleChatPanel}
                     className={`
-                        p-2 rounded-button transition-colors
-                        ${isChatPanelOpen
-                            ? 'bg-action-primary text-white'
-                            : 'hover:bg-sys-bg-alt text-sys-text-secondary'
+                        rounded-button transition-all duration-200 flex items-center
+                        ${selectedStoreName && !isChatPanelOpen
+                            ? 'min-h-[32px] px-3 gap-2 bg-action-primary text-white shadow-md hover:scale-105'
+                            : `p-2 ${isChatPanelOpen ? 'bg-action-primary text-white' : 'hover:bg-sys-bg-alt text-sys-text-secondary'}`
                         }
                     `}
                     title={isChatPanelOpen ? 'Chatを閉じる' : 'Chatを開く'}
                 >
                     <MessageSquare className="w-4 h-4" />
+                    {selectedStoreName && !isChatPanelOpen && (
+                        <span className="text-footnote font-medium pt-0.5">
+                            ② {selectedStoreName} でチャットを開始
+                        </span>
+                    )}
                 </button>
 
                 {/* Inspector Toggle */}

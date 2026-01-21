@@ -13,9 +13,10 @@ import { Badge } from '../atoms';
 interface ChatTimelineProps {
     messages: ChatMessageType[];
     thinkingSteps?: string[];
+    selectedStoreName?: string | null;
 }
 
-export function ChatTimeline({ messages, thinkingSteps }: ChatTimelineProps) {
+export function ChatTimeline({ messages, thinkingSteps, selectedStoreName }: ChatTimelineProps) {
     const scrollRef = useRef<HTMLDivElement>(null);
     const bottomRef = useRef<HTMLDivElement>(null);
     const [isAutoScrollEnabled, setIsAutoScrollEnabled] = useState(true);
@@ -52,10 +53,18 @@ export function ChatTimeline({ messages, thinkingSteps }: ChatTimelineProps) {
     if (messages.length === 0 && !thinkingSteps?.length) {
         return (
             <div className="flex-1 flex items-center justify-center p-8">
-                <div className="text-center">
-                    <p className="text-subheadline text-sys-text-tertiary">
-                        ワークフローを実行すると結果がここに表示されます
-                    </p>
+                <div className="text-center space-y-4">
+                    {selectedStoreName ? (
+                        <>
+                            <div className="text-subheadline text-sys-text-secondary">
+                                ③ {selectedStoreName} でチャット
+                            </div>
+                        </>
+                    ) : (
+                        <p className="text-subheadline text-sys-text-tertiary">
+                            ワークフローを実行すると結果がここに表示されます
+                        </p>
+                    )}
                 </div>
             </div>
         );

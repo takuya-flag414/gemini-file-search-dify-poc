@@ -137,146 +137,123 @@ export function WorkflowSection({
 
     return (
         <SidebarSection
-            title="ワークフロー"
+            title="ワークフロー（上級者向け）"
             icon={<Sparkles className="w-4 h-4 text-action-primary" />}
             isOpen={isOpen}
             onToggle={onToggle}
         >
-            <div className="space-y-3">
-                {/* Mode Selection */}
+            <div className="space-y-4">
+                {/* Step 1: Mode Selection */}
                 <Select
-                    label="操作モード"
+                    label="① 操作モード"
                     value={selectedMode}
                     onChange={(e) => setSelectedMode(e.target.value as OperationMode)}
                     options={OPERATION_MODES.map(m => ({ value: m.value, label: m.label }))}
                 />
 
-                {/* Dynamic Fields */}
+                {/* Step 2: Dynamic Fields */}
                 <AnimatePresence mode="wait">
-                    {/* Store Name Field */}
-                    {modeConfig.requiresStoreName && (
+                    {(modeConfig.requiresStoreName || selectedMode === 'ファイル検索ストアを作成する？' || selectedMode === 'ファイルを削除する？' || selectedMode === 'ファイル内を検索する' || (modeConfig.requiresFile && onFileUpload)) && (
                         <motion.div
-                            key="store-name"
-                            variants={fieldVariants}
-                            initial="hidden"
-                            animate="visible"
-                            exit="hidden"
-                            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="space-y-3"
                         >
-                            <Input
-                                label="ストア名"
-                                placeholder="fileSearchStores/xxx"
-                                value={storeName}
-                                onChange={(e) => setStoreName(e.target.value)}
-                                hint="ストアのリソース名"
-                            />
-                        </motion.div>
-                    )}
+                            <div className="text-caption-1 font-medium text-sys-text-secondary border-b border-sys-separator pb-1 mb-2">
+                                ② 設定
+                            </div>
 
-                    {/* Display Name (for create store) */}
-                    {selectedMode === 'ファイル検索ストアを作成する？' && (
-                        <motion.div
-                            key="display-name"
-                            variants={fieldVariants}
-                            initial="hidden"
-                            animate="visible"
-                            exit="hidden"
-                            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                        >
-                            <Input
-                                label="表示名"
-                                placeholder="新しいストアの名前"
-                                value={displayName}
-                                onChange={(e) => setDisplayName(e.target.value)}
-                            />
-                        </motion.div>
-                    )}
+                            {/* Store Name Field */}
+                            {modeConfig.requiresStoreName && (
+                                <Input
+                                    label="ストア名"
+                                    placeholder="fileSearchStores/xxx"
+                                    value={storeName}
+                                    onChange={(e) => setStoreName(e.target.value)}
+                                    hint="ストアのリソース名"
+                                />
+                            )}
 
-                    {/* Document ID (for delete file) */}
-                    {selectedMode === 'ファイルを削除する？' && (
-                        <motion.div
-                            key="document-id"
-                            variants={fieldVariants}
-                            initial="hidden"
-                            animate="visible"
-                            exit="hidden"
-                            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                        >
-                            <Input
-                                label="ドキュメントID"
-                                placeholder="documents/xxx"
-                                value={documentId}
-                                onChange={(e) => setDocumentId(e.target.value)}
-                            />
-                        </motion.div>
-                    )}
+                            {/* Display Name (for create store) */}
+                            {selectedMode === 'ファイル検索ストアを作成する？' && (
+                                <Input
+                                    label="表示名"
+                                    placeholder="新しいストアの名前"
+                                    value={displayName}
+                                    onChange={(e) => setDisplayName(e.target.value)}
+                                />
+                            )}
 
-                    {/* Query (for search) */}
-                    {selectedMode === 'ファイル内を検索する' && (
-                        <motion.div
-                            key="query"
-                            variants={fieldVariants}
-                            initial="hidden"
-                            animate="visible"
-                            exit="hidden"
-                            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                        >
-                            <Input
-                                label="検索クエリ"
-                                placeholder="検索したい内容..."
-                                value={query}
-                                onChange={(e) => setQuery(e.target.value)}
-                            />
-                        </motion.div>
-                    )}
+                            {/* Document ID (for delete file) */}
+                            {selectedMode === 'ファイルを削除する？' && (
+                                <Input
+                                    label="ドキュメントID"
+                                    placeholder="documents/xxx"
+                                    value={documentId}
+                                    onChange={(e) => setDocumentId(e.target.value)}
+                                />
+                            )}
 
-                    {/* File Upload (for upload mode) */}
-                    {modeConfig.requiresFile && onFileUpload && (
-                        <motion.div
-                            key="file-upload"
-                            variants={fieldVariants}
-                            initial="hidden"
-                            animate="visible"
-                            exit="hidden"
-                            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                        >
-                            <FileDropZone
-                                onFileDrop={handleFileDrop}
-                                isUploading={isUploading}
-                                uploadedFileName={uploadedFileName}
-                            />
+                            {/* Query (for search) */}
+                            {selectedMode === 'ファイル内を検索する' && (
+                                <Input
+                                    label="検索クエリ"
+                                    placeholder="検索したい内容..."
+                                    value={query}
+                                    onChange={(e) => setQuery(e.target.value)}
+                                />
+                            )}
 
-                            {/* Metadata Fields */}
-                            {currentFileId && (
-                                <div className="mt-3 space-y-2">
-                                    <Select
-                                        label="会社"
-                                        value={metadataCompany}
-                                        onChange={(e) => setMetadataCompany(e.target.value)}
-                                        options={[
-                                            { value: '', label: '選択...' },
-                                            ...METADATA_OPTIONS.company.map(v => ({ value: v, label: v }))
-                                        ]}
+                            {/* File Upload (for upload mode) */}
+                            {modeConfig.requiresFile && onFileUpload && (
+                                <motion.div
+                                    key="file-upload"
+                                    variants={fieldVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    exit="hidden"
+                                    transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                                >
+                                    <FileDropZone
+                                        onFileDrop={handleFileDrop}
+                                        isUploading={isUploading}
+                                        uploadedFileName={uploadedFileName}
                                     />
-                                    <Select
-                                        label="部署"
-                                        value={metadataDepartment}
-                                        onChange={(e) => setMetadataDepartment(e.target.value)}
-                                        options={[
-                                            { value: '', label: '選択...' },
-                                            ...METADATA_OPTIONS.department.map(v => ({ value: v, label: v }))
-                                        ]}
-                                    />
-                                    <Select
-                                        label="ファイル種別"
-                                        value={metadataFiletype}
-                                        onChange={(e) => setMetadataFiletype(e.target.value)}
-                                        options={[
-                                            { value: '', label: '選択...' },
-                                            ...METADATA_OPTIONS.filetype.map(v => ({ value: v, label: v }))
-                                        ]}
-                                    />
-                                </div>
+
+                                    {/* Metadata Fields */}
+                                    {currentFileId && (
+                                        <div className="mt-3 space-y-2">
+                                            <Select
+                                                label="会社"
+                                                value={metadataCompany}
+                                                onChange={(e) => setMetadataCompany(e.target.value)}
+                                                options={[
+                                                    { value: '', label: '選択...' },
+                                                    ...METADATA_OPTIONS.company.map(v => ({ value: v, label: v }))
+                                                ]}
+                                            />
+                                            <Select
+                                                label="部署"
+                                                value={metadataDepartment}
+                                                onChange={(e) => setMetadataDepartment(e.target.value)}
+                                                options={[
+                                                    { value: '', label: '選択...' },
+                                                    ...METADATA_OPTIONS.department.map(v => ({ value: v, label: v }))
+                                                ]}
+                                            />
+                                            <Select
+                                                label="ファイル種別"
+                                                value={metadataFiletype}
+                                                onChange={(e) => setMetadataFiletype(e.target.value)}
+                                                options={[
+                                                    { value: '', label: '選択...' },
+                                                    ...METADATA_OPTIONS.filetype.map(v => ({ value: v, label: v }))
+                                                ]}
+                                            />
+                                        </div>
+                                    )}
+                                </motion.div>
                             )}
                         </motion.div>
                     )}
@@ -294,7 +271,7 @@ export function WorkflowSection({
                     </motion.div>
                 )}
 
-                {/* Submit Button */}
+                {/* Step 3: Submit Button */}
                 <Button
                     variant={modeConfig.isDangerous ? 'danger' : 'primary'}
                     size="md"
@@ -307,17 +284,17 @@ export function WorkflowSection({
                     {modeConfig.isDangerous ? (
                         <>
                             <AlertTriangle className="w-4 h-4" />
-                            実行する
+                            ③ 実行する
                         </>
                     ) : selectedMode === 'ファイルをアップロードする？' ? (
                         <>
                             <Upload className="w-4 h-4" />
-                            アップロード
+                            ③ アップロード
                         </>
                     ) : (
                         <>
                             <Send className="w-4 h-4" />
-                            実行する
+                            ③ 実行する
                         </>
                     )}
                 </Button>

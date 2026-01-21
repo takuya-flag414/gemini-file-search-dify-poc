@@ -22,7 +22,7 @@ export function ChatPanel({
     isProcessing = false,
     onSearchSubmit,
 }: ChatPanelProps) {
-    const { isChatPanelOpen, toggleChatPanel, isChatExpanded, toggleChatExpanded } = useApp();
+    const { isChatPanelOpen, toggleChatPanel, isChatExpanded, toggleChatExpanded, selectedStoreName } = useApp();
 
     if (!isChatPanelOpen) {
         return null;
@@ -74,7 +74,11 @@ export function ChatPanel({
             </div>
 
             {/* Chat Timeline */}
-            <ChatTimeline messages={messages} thinkingSteps={thinkingSteps} />
+            <ChatTimeline
+                messages={messages}
+                thinkingSteps={thinkingSteps}
+                selectedStoreName={selectedStoreName}
+            />
 
             {/* Chat Input Area (Footer) */}
             <ChatInputArea

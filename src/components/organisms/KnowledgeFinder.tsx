@@ -83,7 +83,7 @@ function EmptyState() {
                 ファイルがありません
             </h3>
             <p className="text-footnote text-sys-text-tertiary text-center max-w-xs">
-                右上の「＋ アップロード」ボタンからファイルを追加してください
+                ① 右上のボタンからファイルをアップロードしてください
             </p>
         </motion.div>
     );
