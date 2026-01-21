@@ -301,6 +301,7 @@ export type WorkflowAction =
     | 'list_files'
     | 'upload_file'
     | 'delete_file'
+    | 'create_store'
     | 'delete_store';
 
 /**

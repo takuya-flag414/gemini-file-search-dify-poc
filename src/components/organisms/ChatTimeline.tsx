@@ -172,16 +172,59 @@ function MessageBlock({ message }: MessageBlockProps) {
                             <ReactMarkdown
                                 remarkPlugins={[remarkGfm]}
                                 components={{
-                                    // Wrap tables in a scrollable container
-                                    table: ({ children, ...props }) => (
-                                        <div className="overflow-x-auto -mx-1 px-1">
-                                            <table {...props}>{children}</table>
+                                    // Lists
+                                    ul: ({ node, ...props }) => <ul className="list-disc pl-6 mb-2" {...props} />,
+                                    ol: ({ node, ...props }) => <ol className="list-decimal pl-6 mb-2" {...props} />,
+                                    li: ({ node, ...props }) => <li className="mb-1" {...props} />,
+                                    // Headings
+                                    h1: ({ node, ...props }) => <h1 className="text-xl font-bold mb-3 mt-4" {...props} />,
+                                    h2: ({ node, ...props }) => <h2 className="text-lg font-bold mb-2 mt-3" {...props} />,
+                                    h3: ({ node, ...props }) => <h3 className="text-base font-bold mb-2 mt-3" {...props} />,
+                                    h4: ({ node, ...props }) => <h4 className="text-sm font-bold mb-2 mt-3" {...props} />,
+                                    // Links
+                                    a: ({ node, ...props }) => (
+                                        <a
+                                            className="underline hover:opacity-80 transition-opacity"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            {...props}
+                                        />
+                                    ),
+                                    // Blockquote
+                                    blockquote: ({ node, ...props }) => (
+                                        <blockquote className="border-l-4 border-sys-separator pl-4 italic my-2 opacity-80" {...props} />
+                                    ),
+                                    // Tables
+                                    table: ({ node, ...props }) => (
+                                        <div className="overflow-x-auto -mx-1 px-1 my-2">
+                                            <table className="min-w-full border-collapse text-left" {...props} />
                                         </div>
                                     ),
-                                    // Wrap pre/code blocks in a scrollable container
-                                    pre: ({ children, ...props }) => (
-                                        <pre className="overflow-x-auto" {...props}>{children}</pre>
+                                    th: ({ node, ...props }) => (
+                                        <th className="border-b border-sys-separator p-2 font-semibold" {...props} />
                                     ),
+                                    td: ({ node, ...props }) => (
+                                        <td className="border-b border-sys-separator p-2" {...props} />
+                                    ),
+                                    // Code
+                                    pre: ({ node, ...props }) => (
+                                        <div className="overflow-x-auto my-2 rounded-lg bg-black/5 dark:bg-white/10 p-3">
+                                            <pre className="text-sm font-mono" {...props} />
+                                        </div>
+                                    ),
+                                    code: ({ node, className, children, ...props }) => {
+                                        const match = /language-(\w+)/.exec(className || '');
+                                        const isInline = !match && !String(children).includes('\n');
+                                        return isInline ? (
+                                            <code className="bg-black/5 dark:bg-white/10 rounded px-1 py-0.5 text-sm font-mono" {...props}>
+                                                {children}
+                                            </code>
+                                        ) : (
+                                            <code className={className} {...props}>
+                                                {children}
+                                            </code>
+                                        );
+                                    }
                                 }}
                             >
                                 {message.content}

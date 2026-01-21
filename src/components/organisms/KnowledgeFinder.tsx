@@ -71,7 +71,7 @@ function ViewToggle({ mode, onChange }: ViewToggleProps) {
 // Empty State
 // ============================================
 
-function EmptyState({ onUploadClick }: { onUploadClick: () => void }) {
+function EmptyState() {
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -83,19 +83,8 @@ function EmptyState({ onUploadClick }: { onUploadClick: () => void }) {
                 ファイルがありません
             </h3>
             <p className="text-footnote text-sys-text-tertiary text-center max-w-xs">
-                アップロードボタンをクリックしてファイルを追加してください
+                右上の「＋ アップロード」ボタンからファイルを追加してください
             </p>
-            <button
-                onClick={onUploadClick}
-                className="
-                    mt-4 px-6 py-2.5 rounded-xl
-                    bg-action-primary text-white
-                    text-subheadline font-medium
-                    hover:bg-action-hover transition-colors
-                "
-            >
-                ファイルをアップロード
-            </button>
         </motion.div>
     );
 }
@@ -234,7 +223,7 @@ export function KnowledgeFinder({
                 {isLoading ? (
                     <LoadingSkeleton />
                 ) : files.length === 0 ? (
-                    <EmptyState onUploadClick={onUploadClick} />
+                    <EmptyState />
                 ) : viewMode === 'grid' ? (
                     /* Grid View */
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 p-6">

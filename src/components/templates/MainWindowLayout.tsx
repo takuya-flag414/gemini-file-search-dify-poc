@@ -25,6 +25,7 @@ interface MainWindowLayoutProps {
     currentStore?: FileSearchStore | null;
     onStoreSelect?: (storeName: string) => void;
     onCreateStore?: (displayName: string) => Promise<void>;
+    onDeleteStore?: (storeName: string) => Promise<void>;
     isLoadingStores?: boolean;
     // Chat Panel props
     messages?: ChatMessage[];
@@ -45,6 +46,7 @@ export function MainWindowLayout({
     currentStore,
     onStoreSelect,
     onCreateStore,
+    onDeleteStore,
     isLoadingStores,
     // Chat Panel
     messages = [],
@@ -74,6 +76,7 @@ export function MainWindowLayout({
                     currentStore={currentStore}
                     onStoreSelect={onStoreSelect}
                     onCreateStore={onCreateStore}
+                    onDeleteStore={onDeleteStore}
                     isLoadingStores={isLoadingStores}
                 />
 

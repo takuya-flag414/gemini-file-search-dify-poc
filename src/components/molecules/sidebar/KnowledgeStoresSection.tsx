@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Database, Plus } from 'lucide-react';
+import { Database, Plus, Trash2 } from 'lucide-react';
 import { SidebarSection } from './SidebarSection';
 import { useApp } from '../../../context/AppContext';
 import type { FileSearchStore } from '../../../types';
@@ -12,6 +12,7 @@ interface KnowledgeStoresSectionProps {
     currentStore?: FileSearchStore | null;
     onStoreSelect?: (storeName: string) => void;
     onCreateStore?: (displayName: string) => Promise<void>;
+    onDeleteStore?: (storeName: string) => Promise<void>;
     isLoadingStores?: boolean;
 }
 
@@ -21,6 +22,7 @@ export function KnowledgeStoresSection({
     stores,
     onStoreSelect,
     onCreateStore,
+    onDeleteStore,
     isLoadingStores = false,
 }: KnowledgeStoresSectionProps) {
     const [newStoreName, setNewStoreName] = useState('');
@@ -102,7 +104,7 @@ export function KnowledgeStoresSection({
                                 className={`
                                     w-full text-left px-3 py-2 rounded-button 
                                     transition-all duration-200 relative
-                                    flex items-center gap-2
+                                    flex items-center gap-2 group
                                     ${isSelected
                                         ? 'text-action-primary'
                                         : 'hover:bg-sys-bg-alt'
@@ -140,6 +142,28 @@ export function KnowledgeStoresSection({
                                 <span className="text-footnote truncate flex-1 relative z-10">
                                     {store.displayName}
                                 </span>
+
+                                {/* Delete Button */}
+                                {onDeleteStore && (
+                                    <div
+                                        role="button"
+                                        onClick={async (e) => {
+                                            e.stopPropagation();
+                                            if (window.confirm(`「${store.displayName}」を削除してもよろしいですか？\n※この操作は取り消せません。`)) {
+                                                await onDeleteStore(store.storeName);
+                                            }
+                                        }}
+                                        className={`
+                                            p-1 rounded opacity-0 group-hover:opacity-100
+                                            transition-all duration-200
+                                            hover:bg-feedback-danger/10 hover:text-feedback-danger
+                                            text-sys-text-tertiary relative z-20
+                                        `}
+                                        title="ストアを削除"
+                                    >
+                                        <Trash2 className="w-3.5 h-3.5" />
+                                    </div>
+                                )}
                             </button>
                         );
                     })}

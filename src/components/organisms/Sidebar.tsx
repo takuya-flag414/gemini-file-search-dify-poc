@@ -26,6 +26,7 @@ interface SidebarProps {
     currentStore?: FileSearchStore | null;
     onStoreSelect?: (storeName: string) => void;
     onCreateStore?: (displayName: string) => Promise<void>;
+    onDeleteStore?: (storeName: string) => Promise<void>;
     isLoadingStores?: boolean;
 }
 
@@ -40,6 +41,7 @@ export function Sidebar({
     currentStore,
     onStoreSelect,
     onCreateStore,
+    onDeleteStore,
     isLoadingStores = false,
 }: SidebarProps) {
     const {
@@ -63,7 +65,6 @@ export function Sidebar({
 
             {/* Sidebar Content */}
             <div className="flex-1 overflow-y-auto px-4 py-2">
-                {/* Knowledge Stores Section (Phase A) */}
                 <KnowledgeStoresSection
                     isOpen={isKnowledgeStoresOpen}
                     onToggle={() => setIsKnowledgeStoresOpen(!isKnowledgeStoresOpen)}
@@ -71,6 +72,7 @@ export function Sidebar({
                     currentStore={currentStore}
                     onStoreSelect={onStoreSelect}
                     onCreateStore={onCreateStore}
+                    onDeleteStore={onDeleteStore}
                     isLoadingStores={isLoadingStores}
                 />
 

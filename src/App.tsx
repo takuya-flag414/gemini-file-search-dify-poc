@@ -40,6 +40,7 @@ function AppContent() {
     createStore,
     uploadFile: uploadToStore,
     deleteFile: deleteFromStore,
+    deleteStore,
   } = useGeminiFileSystem();
 
   const [uploadedFileId, setUploadedFileId] = useState<string | undefined>();
@@ -80,8 +81,16 @@ function AppContent() {
 
   // Handle create store
   const handleCreateStore = useCallback(async (displayName: string) => {
-    await createStore(displayName);
-  }, [createStore]);
+    const newStore = await createStore(displayName);
+    if (newStore) {
+      handleStoreSelect(newStore.storeName);
+    }
+  }, [createStore, handleStoreSelect]);
+
+  // Handle delete store
+  const handleDeleteStore = useCallback(async (storeName: string) => {
+    await deleteStore(storeName);
+  }, [deleteStore]);
 
   // Handle file delete in Finder
   const handleDeleteFile = useCallback(async (file: StoredFile) => {
@@ -138,6 +147,7 @@ function AppContent() {
         currentStore={currentStore}
         onStoreSelect={handleStoreSelect}
         onCreateStore={handleCreateStore}
+        onDeleteStore={handleDeleteStore}
         isLoadingStores={isLoadingStores}
         // Chat Panel props
         messages={messages}

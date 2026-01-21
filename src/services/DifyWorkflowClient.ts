@@ -304,8 +304,16 @@ export class DifyWorkflowClient {
      * Note: This action is not defined in Backend B YAML, 
      * would need to be added if required
      */
-    async createStore(_displayName: string): Promise<FileSearchStore> {
-        throw new Error('createStore not implemented in Backend B workflow');
+    async createStore(displayName: string): Promise<FileSearchStore> {
+        const response = await this.runWorkflow('create_store', { displayName });
+        // Backend B returns outputs.result as a flat FileSearchStore object (or array)
+        // Adjust based on actual response if needed, but assuming similar pattern to upload
+        const result = this.parseResult<FileSearchStore[]>(response);
+
+        if (!result || result.length === 0) {
+            throw new Error('Store creation succeeded but no store returned');
+        }
+        return result[0];
     }
 
     /**
