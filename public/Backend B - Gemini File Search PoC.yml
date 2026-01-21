@@ -71,6 +71,7 @@ workflow:
         sourceType: start
         targetType: code
       id: 1768963579039-source-1768963967522-target
+      selected: false
       source: '1768963579039'
       sourceHandle: source
       target: '1768963967522'
@@ -83,6 +84,7 @@ workflow:
         sourceType: code
         targetType: if-else
       id: 1768963967522-source-1768964018322-target
+      selected: false
       source: '1768963967522'
       sourceHandle: source
       target: '1768964018322'
@@ -95,6 +97,7 @@ workflow:
         sourceType: if-else
         targetType: tool
       id: 1768964018322-true-1768964145113-target
+      selected: false
       source: '1768964018322'
       sourceHandle: 'true'
       target: '1768964145113'
@@ -107,6 +110,7 @@ workflow:
         sourceType: if-else
         targetType: tool
       id: 1768964018322-5bd687de-10b6-47ec-8250-ae10ccbe80ba-1768964163036-target
+      selected: false
       source: '1768964018322'
       sourceHandle: 5bd687de-10b6-47ec-8250-ae10ccbe80ba
       target: '1768964163036'
@@ -119,6 +123,7 @@ workflow:
         sourceType: if-else
         targetType: tool
       id: 1768964018322-2f4b93a8-3330-4325-848f-dcf3d50116de-1768964811195-target
+      selected: false
       source: '1768964018322'
       sourceHandle: 2f4b93a8-3330-4325-848f-dcf3d50116de
       target: '1768964811195'
@@ -131,6 +136,7 @@ workflow:
         sourceType: if-else
         targetType: tool
       id: 1768964018322-039dba51-4591-498c-a90c-cbed297f74e3-1768965043589-target
+      selected: false
       source: '1768964018322'
       sourceHandle: 039dba51-4591-498c-a90c-cbed297f74e3
       target: '1768965043589'
@@ -143,6 +149,7 @@ workflow:
         sourceType: tool
         targetType: code
       id: 1768964145113-source-1768965137872-target
+      selected: false
       source: '1768964145113'
       sourceHandle: source
       target: '1768965137872'
@@ -153,18 +160,8 @@ workflow:
         isInLoop: false
         sourceType: tool
         targetType: code
-      id: 1768964163036-source-1768965137872-target
-      source: '1768964163036'
-      sourceHandle: source
-      target: '1768965137872'
-      targetHandle: target
-      type: custom
-      zIndex: 0
-    - data:
-        isInLoop: false
-        sourceType: tool
-        targetType: code
       id: 1768964811195-source-1768965137872-target
+      selected: false
       source: '1768964811195'
       sourceHandle: source
       target: '1768965137872'
@@ -176,6 +173,7 @@ workflow:
         sourceType: tool
         targetType: code
       id: 1768965043589-source-1768965137872-target
+      selected: false
       source: '1768965043589'
       sourceHandle: source
       target: '1768965137872'
@@ -188,9 +186,22 @@ workflow:
         sourceType: code
         targetType: end
       id: 1768965137872-source-1768965271050-target
+      selected: false
       source: '1768965137872'
       sourceHandle: source
       target: '1768965271050'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: code
+      id: 1768964163036-source-1768965137872-target
+      selected: false
+      source: '1768964163036'
+      sourceHandle: source
+      target: '1768965137872'
       targetHandle: target
       type: custom
       zIndex: 0
@@ -222,34 +233,54 @@ workflow:
           required: false
           type: paragraph
           variable: payload
-      height: 135
+        - allowed_file_extensions: []
+          allowed_file_types:
+          - image
+          - document
+          allowed_file_upload_methods:
+          - local_file
+          default: ''
+          hint: ''
+          label: File
+          max_length: 5
+          options: []
+          placeholder: ''
+          required: false
+          type: file-list
+          variable: file
+      height: 161
       id: '1768963579039'
       position:
-        x: 80
-        y: 282
+        x: -0.870550563296149
+        y: 66
       positionAbsolute:
-        x: 80
-        y: 282
+        x: -0.870550563296149
+        y: 66
       selected: false
       sourcePosition: right
       targetPosition: left
       type: custom
       width: 242
     - data:
-        code: "import json\n\ndef main(payload: str) -> dict:\n    try:\n        data\
-          \ = json.loads(payload) if payload else {}\n        \n        # 後続のツールが使いやすいように、必要な値をフラットなStringとして展開する\n\
-          \        return {\n            \"data\": data,  # 一応Objectも残しておく\n     \
-          \       \n            # --- ここが追加ポイント ---\n            # .get() の第二引数にデフォルト値(空文字など)を指定してエラーを防ぐ\n\
-          \            \"store_name\": data.get(\"storeName\", \"\"),\n          \
-          \  \"display_name\": data.get(\"displayName\", \"\"),\n            \"document_id\"\
-          : data.get(\"documentId\", \"\"),\n            \"page_token\": data.get(\"\
-          pageToken\", \"\"),\n            \n            # customMetadata はJSON形式の文字列として渡す必要がある場合が多い\n\
-          \            \"custom_metadata_str\": json.dumps(data.get(\"customMetadata\"\
-          , []), ensure_ascii=False)\n        }\n    except:\n        # エラー時は空の値を返す\n\
-          \        return {\n            \"data\": {},\n            \"store_name\"\
-          : \"\",\n            \"display_name\": \"\",\n            \"document_id\"\
-          : \"\",\n            \"page_token\": \"\",\n            \"custom_metadata_str\"\
-          : \"[]\"\n        }"
+        code: "import json\nimport re\n\ndef main(payload: str) -> dict:\n    try:\n\
+          \        # 入力が空の場合のガード\n        if not payload:\n            return default_output()\n\
+          \n        # 1. まず標準的なJSONパースを試みる\n        try:\n            data = json.loads(payload)\n\
+          \        except json.JSONDecodeError:\n            # 2. 失敗した場合、シングルクォートをダブルクォートに置換してリトライ（簡易的な修復）\n\
+          \            # 注意: 値の中にシングルクォートが含まれる場合は破損する可能性がありますが、PoCとしては許容します\n    \
+          \        fixed_payload = payload.replace(\"'\", '\"')\n            data\
+          \ = json.loads(fixed_payload)\n        \n        # 後続のツールが使いやすいように展開\n \
+          \       return {\n            \"data\": data,\n            \"store_name\"\
+          : data.get(\"storeName\", \"\"),\n            \"display_name\": data.get(\"\
+          displayName\", \"\"),\n            \"document_id\": data.get(\"documentId\"\
+          , \"\"),\n            \"page_token\": data.get(\"pageToken\", \"\"),\n \
+          \           \"custom_metadata_str\": json.dumps(data.get(\"customMetadata\"\
+          , []), ensure_ascii=False)\n        }\n    except Exception as e:\n    \
+          \    # エラー時はデバッグしやすいようにエラー内容を含める（本番ではログ出力推奨）\n        return default_output(error_msg=str(e))\n\
+          \ndef default_output(error_msg=\"\"):\n    # エラー時または空入力時のデフォルト値\n    return\
+          \ {\n        \"data\": {\"error\": error_msg}, # エラー情報をデータに含める\n       \
+          \ \"store_name\": \"\",\n        \"display_name\": \"\",\n        \"document_id\"\
+          : \"\",\n        \"page_token\": \"\",\n        \"custom_metadata_str\"\
+          : \"[]\"\n    }"
         code_language: python3
         outputs:
           custom_metadata_str:
@@ -282,11 +313,11 @@ workflow:
       height: 52
       id: '1768963967522'
       position:
-        x: 382
-        y: 282
+        x: 342
+        y: 108
       positionAbsolute:
-        x: 382
-        y: 282
+        x: 342
+        y: 108
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -314,6 +345,7 @@ workflow:
             variable_selector:
             - '1768963579039'
             - action
+          id: 5bd687de-10b6-47ec-8250-ae10ccbe80ba
           logical_operator: and
         - case_id: 2f4b93a8-3330-4325-848f-dcf3d50116de
           conditions:
@@ -324,6 +356,7 @@ workflow:
             variable_selector:
             - '1768963579039'
             - action
+          id: 2f4b93a8-3330-4325-848f-dcf3d50116de
           logical_operator: and
         - case_id: 039dba51-4591-498c-a90c-cbed297f74e3
           conditions:
@@ -334,6 +367,7 @@ workflow:
             variable_selector:
             - '1768963579039'
             - action
+          id: 039dba51-4591-498c-a90c-cbed297f74e3
           logical_operator: and
         selected: false
         title: IF/ELSE
@@ -342,10 +376,11 @@ workflow:
       id: '1768964018322'
       position:
         x: 684
-        y: 282
+        y: 0
       positionAbsolute:
         x: 684
-        y: 282
+        y: 0
+      selected: false
       sourcePosition: right
       targetPosition: left
       type: custom
@@ -372,11 +407,12 @@ workflow:
       height: 52
       id: '1768964145113'
       position:
-        x: 986
-        y: 282
+        x: 1046
+        y: 21
       positionAbsolute:
-        x: 986
-        y: 282
+        x: 1046
+        y: 21
+      selected: false
       sourcePosition: right
       targetPosition: left
       type: custom
@@ -487,11 +523,11 @@ workflow:
       height: 52
       id: '1768964163036'
       position:
-        x: 986
-        y: 373
+        x: 1046
+        y: 153
       positionAbsolute:
-        x: 986
-        y: 373
+        x: 1046
+        y: 153
       selected: false
       sourcePosition: right
       targetPosition: left
@@ -678,8 +714,8 @@ workflow:
           file:
             type: variable
             value:
-            - sys
-            - files
+            - '1768963579039'
+            - file
           file_search_store_name:
             type: mixed
             value: '{{#1768963967522.store_name#}}'
@@ -693,12 +729,12 @@ workflow:
       height: 52
       id: '1768964811195'
       position:
-        x: 986
-        y: 464
+        x: 1046
+        y: 285
       positionAbsolute:
-        x: 986
-        y: 464
-      selected: false
+        x: 1046
+        y: 285
+      selected: true
       sourcePosition: right
       targetPosition: left
       type: custom
@@ -852,76 +888,109 @@ workflow:
         tool_parameters:
           confirm:
             type: constant
-            value: false
+            value: true
           document_id:
             type: mixed
             value: '{{#1768963967522.document_id#}}'
           document_name:
             type: mixed
-            value: '{{#1768963967522.display_name#}}'
+            value: ''
           file_search_store_name:
             type: mixed
             value: '{{#1768963967522.store_name#}}'
           force:
             type: constant
-            value: null
+            value: true
         type: tool
       height: 52
       id: '1768965043589'
       position:
-        x: 986
-        y: 555
+        x: 1046
+        y: 417
       positionAbsolute:
-        x: 986
-        y: 555
+        x: 1046
+        y: 417
+      selected: false
       sourcePosition: right
       targetPosition: left
       type: custom
       width: 242
     - data:
-        code: "import json\n\ndef main(action: str, res_list_stores: str, res_list_files:\
-          \ str, res_upload: str, res_delete: str) -> dict:\n    \n    raw_result\
-          \ = \"{}\"\n    \n    # actionに応じて、使用するレスポンス変数をスイッチする\n    if action ==\
-          \ \"list_stores\":\n        raw_result = res_list_stores\n    elif action\
-          \ == \"list_files\":\n        raw_result = res_list_files\n    elif action\
-          \ == \"upload_file\":\n        raw_result = res_upload\n    elif \"delete\"\
-          \ in action:\n        raw_result = res_delete\n    \n    # --- 以下、前回の整形ロジックと同じ\
-          \ ---\n    try:\n        data = json.loads(raw_result) if raw_result else\
-          \ {}\n        formatted_result = []\n\n        # Case 1: File List / Upload\
-          \ Result (StoredFile[])\n        if action in [\"list_files\", \"upload_file\"\
-          ]:\n            documents = []\n            if \"documents\" in data:\n\
-          \                documents = data[\"documents\"]\n            elif \"name\"\
-          \ in data and \"display_name\" in data:\n                documents = [data]\n\
-          \            \n            for doc in documents:\n                # メタデータ整形\n\
-          \                metadata_kv = {}\n                if \"custom_metadata\"\
-          \ in doc:\n                    for meta in doc[\"custom_metadata\"]:\n \
-          \                       metadata_kv[meta.get(\"key\")] = meta.get(\"string_value\"\
-          )\n\n                formatted_result.append({\n                    \"documentId\"\
-          : doc.get(\"name\"), \n                    \"displayName\": doc.get(\"display_name\"\
-          ),\n                    \"mimeType\": doc.get(\"mime_type\", \"application/octet-stream\"\
-          ),\n                    \"sizeBytes\": int(doc.get(\"size_bytes\", 0)),\n\
-          \                    \"createTime\": doc.get(\"create_time\"),\n       \
-          \             \"state\": doc.get(\"state\", \"ACTIVE\"),\n             \
-          \       \"customMetadata\": metadata_kv\n                })\n\n        #\
-          \ Case 2: Store List (FileSearchStore[])\n        elif action in [\"list_stores\"\
-          , \"create_store\"]:\n            stores = []\n            if \"file_search_stores\"\
-          \ in data:\n                stores = data[\"file_search_stores\"]\n    \
-          \        elif \"name\" in data and \"display_name\" in data:\n         \
-          \       stores = [data]\n                \n            for store in stores:\n\
-          \                formatted_result.append({\n                    \"storeName\"\
-          : store.get(\"name\"),\n                    \"displayName\": store.get(\"\
-          display_name\"),\n                    \"createdAt\": store.get(\"create_time\"\
-          )\n                })\n\n        # Case 3: Delete\n        elif \"delete\"\
-          \ in action:\n            return {\"result\": {\"success\": True}}\n\n \
-          \       return {\"result\": formatted_result}\n\n    except Exception as\
+        code: "import json\n\ndef main(action: str, res_list_stores: list, res_list_files:\
+          \ list, res_upload: list, res_delete: list) -> dict:\n    \"\"\"\n    Format\
+          \ Response Node (JSON Output Adapter)\n    全アクション対応・修正版\n    \"\"\"\n  \
+          \  \n    # 1. アクションに応じた入力データの選択\n    target_data = []\n    if action ==\
+          \ \"list_stores\":\n        target_data = res_list_stores\n    elif action\
+          \ == \"list_files\":\n        target_data = res_list_files\n    elif action\
+          \ == \"upload_file\":\n        target_data = res_upload\n    elif \"delete\"\
+          \ in action:\n        target_data = res_delete\n\n    # ガード処理（None対策）\n\
+          \    if target_data is None:\n        target_data = []\n    elif isinstance(target_data,\
+          \ str):\n        try:\n            target_data = json.loads(target_data)\
+          \ if target_data.strip() else []\n        except:\n            target_data\
+          \ = []\n\n    formatted_result = []\n\n    try:\n        # ==========================================\n\
+          \        # Case 1: List Stores\n        # ==========================================\n\
+          \        if action in [\"list_stores\", \"create_store\"]:\n           \
+          \ if isinstance(target_data, list) and len(target_data) > 0:\n         \
+          \       first_item = target_data[0]\n                if isinstance(first_item,\
+          \ dict):\n                    stores_list = first_item.get(\"stores\", [])\n\
+          \                    for store in stores_list:\n                       \
+          \ formatted_result.append({\n                            \"storeName\":\
+          \ store.get(\"name\", \"\"),\n                            \"displayName\"\
+          : store.get(\"display_name\", \"\"),\n                            \"createdAt\"\
+          : store.get(\"create_time\", \"\")\n                        })\n\n     \
+          \   # ==========================================\n        # Case 2: List\
+          \ Files\n        # ==========================================\n        elif\
+          \ action == \"list_files\":\n            if isinstance(target_data, list)\
+          \ and len(target_data) > 0:\n                first_item = target_data[0]\n\
+          \                if isinstance(first_item, dict):\n                    docs_list\
+          \ = first_item.get(\"documents\", [])\n                    for doc in docs_list:\n\
+          \                        # ID抽出ロジック\n                        raw_id = doc.get(\"\
+          name\", \"\")\n                        doc_id = raw_id\n               \
+          \         if \"documents/\" in raw_id:\n                            start_index\
+          \ = raw_id.find(\"documents/\")\n                            doc_id = raw_id[start_index:]\n\
+          \n                        # メタデータ抽出\n                        metadata_kv\
+          \ = {}\n                        c_meta = doc.get(\"custom_metadata\", [])\n\
+          \                        if isinstance(c_meta, list):\n                \
+          \            for m in c_meta:\n                                if isinstance(m,\
+          \ dict):\n                                    metadata_kv[m.get(\"key\"\
+          )] = m.get(\"string_value\")\n\n                        formatted_result.append({\n\
+          \                            \"documentId\": doc_id,\n                 \
+          \           \"displayName\": doc.get(\"display_name\", \"\"),\n        \
+          \                    \"mimeType\": doc.get(\"mime_type\", \"application/octet-stream\"\
+          ),\n                            \"sizeBytes\": int(doc.get(\"size_bytes\"\
+          , 0)),\n                            \"createTime\": doc.get(\"create_time\"\
+          , \"\"),\n                            \"state\": doc.get(\"state\", \"ACTIVE\"\
+          ),\n                            \"customMetadata\": metadata_kv\n      \
+          \                  })\n\n        # ==========================================\n\
+          \        # Case 3: Upload File\n        # ==========================================\n\
+          \        elif action == \"upload_file\":\n            items = []\n     \
+          \       if isinstance(target_data, list):\n                items = target_data\n\
+          \            elif isinstance(target_data, dict):\n                items\
+          \ = [target_data]\n\n            for item in items:\n                raw_id\
+          \ = item.get(\"document_name\") or item.get(\"file_id\") or \"\"\n     \
+          \           doc_id = raw_id\n                if \"documents/\" in raw_id:\n\
+          \                    start_index = raw_id.find(\"documents/\")\n       \
+          \             doc_id = raw_id[start_index:]\n                \n        \
+          \        state = item.get(\"status\", \"ACTIVE\")\n                if state\
+          \ == \"completed\":\n                    state = \"ACTIVE\"\n          \
+          \      \n                formatted_result.append({\n                   \
+          \ \"documentId\": doc_id,\n                    \"displayName\": item.get(\"\
+          display_name\", \"Unknown\"),\n                    \"mimeType\": \"application/octet-stream\"\
+          ,\n                    \"sizeBytes\": 0,\n                    \"createTime\"\
+          : \"\",\n                    \"state\": state,\n                    \"customMetadata\"\
+          : {}\n                })\n\n        # ==========================================\n\
+          \        # Case 4: Delete (修正済み箇所)\n        # ==========================================\n\
+          \        elif \"delete\" in action:\n            return {\"result\": [{\"\
+          success\": True}]}\n\n        # ==========================================\n\
+          \        # ⚠️ ここが重要: delete以外の場合も必ず値を返す\n        # ==========================================\n\
+          \        return {\"result\": formatted_result}\n\n    except Exception as\
           \ e:\n        return {\n            \"result\": [],\n            \"error\"\
-          : f\"Formatting Error: {str(e)}\",\n            \"raw\": raw_result\n  \
-          \      }"
+          : str(e),\n            \"debug_info\": str(target_data)[:200]\n        }"
         code_language: python3
         outputs:
           result:
             children: null
-            type: string
+            type: array[object]
         selected: false
         title: Format Response
         type: code
@@ -933,33 +1002,33 @@ workflow:
           variable: action
         - value_selector:
           - '1768964145113'
-          - text
-          value_type: string
+          - json
+          value_type: array[object]
           variable: res_list_stores
         - value_selector:
           - '1768964163036'
-          - text
-          value_type: string
+          - json
+          value_type: array[object]
           variable: res_list_files
         - value_selector:
           - '1768964811195'
-          - text
-          value_type: string
+          - json
+          value_type: array[object]
           variable: res_upload
         - value_selector:
           - '1768965043589'
-          - text
-          value_type: string
+          - json
+          value_type: array[object]
           variable: res_delete
       height: 52
       id: '1768965137872'
       position:
-        x: 1548
-        y: 385
+        x: 1708
+        y: 158
       positionAbsolute:
-        x: 1548
-        y: 385
-      selected: true
+        x: 1708
+        y: 158
+      selected: false
       sourcePosition: right
       targetPosition: left
       type: custom
@@ -977,17 +1046,18 @@ workflow:
       height: 88
       id: '1768965271050'
       position:
-        x: 1850
-        y: 385
+        x: 2050
+        y: 140
       positionAbsolute:
-        x: 1850
-        y: 385
+        x: 2050
+        y: 140
+      selected: false
       sourcePosition: right
       targetPosition: left
       type: custom
       width: 242
     viewport:
-      x: -178.75424157273164
-      y: 167.43873852542995
-      zoom: 0.5743491774985174
+      x: -1158.9652729158854
+      y: 137.31869635351313
+      zoom: 0.8705505632961241
   rag_pipeline_variables: []

@@ -96,10 +96,11 @@ export class DifyWorkflowClient {
             inputs: {
                 action,
                 payload: JSON.stringify(payload),
+                // Files must be inside inputs.file, not at top level
+                ...(files && { file: files }),
             },
             response_mode: 'blocking',
             user: this.userId,
-            ...(files && { files }),
         };
 
         // Log request
@@ -152,6 +153,28 @@ export class DifyWorkflowClient {
     }
 
     /**
+     * Normalize file state from Backend B format to frontend format
+     * STATE_ACTIVE → ACTIVE, STATE_PROCESSING → PROCESSING, STATE_FAILED → FAILED
+     */
+    private normalizeFileState(state: string): 'ACTIVE' | 'PROCESSING' | 'FAILED' {
+        if (state === 'STATE_ACTIVE') return 'ACTIVE';
+        if (state === 'STATE_PROCESSING') return 'PROCESSING';
+        if (state === 'STATE_FAILED') return 'FAILED';
+        // Fallback: already normalized or unknown
+        return state as 'ACTIVE' | 'PROCESSING' | 'FAILED';
+    }
+
+    /**
+     * Normalize a single StoredFile from Backend B response
+     */
+    private normalizeStoredFile(file: StoredFile): StoredFile {
+        return {
+            ...file,
+            state: this.normalizeFileState(file.state as string),
+        };
+    }
+
+    /**
      * Parse workflow result
      * Handles both JSON string and already-parsed object responses
      */
@@ -188,8 +211,9 @@ export class DifyWorkflowClient {
      */
     async listStores(): Promise<FileSearchStore[]> {
         const response = await this.runWorkflow('list_stores', {});
-        const result = this.parseResult<{ result: FileSearchStore[] }>(response);
-        return result.result || [];
+        // Backend Bのレスポンスでは outputs.result が直接 FileSearchStore[] 配列
+        const result = this.parseResult<FileSearchStore[]>(response);
+        return result || [];
     }
 
     /**
@@ -197,8 +221,10 @@ export class DifyWorkflowClient {
      */
     async listFiles(storeName: string, pageToken?: string): Promise<StoredFile[]> {
         const response = await this.runWorkflow('list_files', { storeName, pageToken });
-        const result = this.parseResult<{ result: StoredFile[] }>(response);
-        return result.result || [];
+        // Backend Bのレスポンスでは outputs.result が直接 StoredFile[] 配列
+        const result = this.parseResult<StoredFile[]>(response);
+        // state値を正規化 (STATE_ACTIVE → ACTIVE)
+        return (result || []).map(file => this.normalizeStoredFile(file));
     }
 
     /**
@@ -233,14 +259,16 @@ export class DifyWorkflowClient {
             }]
         );
 
-        const result = this.parseResult<{ result: StoredFile[] }>(response);
+        // Backend B returns outputs.result as a flat StoredFile array
+        const result = this.parseResult<StoredFile[]>(response);
 
         // Return first file (upload returns array with single item)
-        if (!result.result || result.result.length === 0) {
+        if (!result || result.length === 0) {
             throw new Error('Upload succeeded but no file returned');
         }
 
-        return result.result[0];
+        // state値を正規化して返す
+        return this.normalizeStoredFile(result[0]);
     }
 
     /**
@@ -248,8 +276,9 @@ export class DifyWorkflowClient {
      */
     async deleteFile(storeName: string, documentId: string): Promise<boolean> {
         const response = await this.runWorkflow('delete_file', { storeName, documentId });
-        const result = this.parseResult<{ result: { success: boolean } }>(response);
-        return result.result?.success ?? false;
+        // Backend B returns outputs.result as [{ success: boolean }]
+        const result = this.parseResult<Array<{ success: boolean }>>(response);
+        return result[0]?.success ?? false;
     }
 
     /**
@@ -257,8 +286,9 @@ export class DifyWorkflowClient {
      */
     async deleteStore(storeName: string): Promise<boolean> {
         const response = await this.runWorkflow('delete_store', { storeName });
-        const result = this.parseResult<{ result: { success: boolean } }>(response);
-        return result.result?.success ?? false;
+        // Backend B returns outputs.result as [{ success: boolean }]
+        const result = this.parseResult<Array<{ success: boolean }>>(response);
+        return result[0]?.success ?? false;
     }
 
     /**
@@ -280,6 +310,7 @@ export class DifyWorkflowClient {
 
     /**
      * Get a specific file (filter from list)
+     * Note: listFiles already normalizes the state values
      */
     async getFile(storeName: string, documentId: string): Promise<StoredFile | null> {
         const files = await this.listFiles(storeName);
