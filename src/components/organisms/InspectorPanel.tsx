@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { X, ChevronDown, ChevronRight, Copy, Check } from 'lucide-react';
+import { X, ChevronDown, ChevronRight, Copy, Check, FileText } from 'lucide-react';
+import { dump } from 'js-yaml';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../../context/AppContext';
 import type { LogEntry } from '../../types';
@@ -69,7 +70,7 @@ export function InspectorPanel({ logs }: InspectorPanelProps) {
             {/* Export Button */}
             {logs.length > 0 && (
                 <div className="p-3 border-t border-sys-separator">
-                    <ExportButton logs={logs} />
+                    <CopyYamlButton logs={logs} />
                 </div>
             )}
         </motion.aside>
@@ -187,55 +188,48 @@ function JsonViewer({ data }: JsonViewerProps) {
 }
 
 // ============================================
-// Export Button
+// Copy YAML Button
 // ============================================
 
-interface ExportButtonProps {
+interface CopyYamlButtonProps {
     logs: LogEntry[];
 }
 
-function ExportButton({ logs }: ExportButtonProps) {
-    const handleExport = () => {
-        const markdown = generateMarkdownReport(logs);
-        const blob = new Blob([markdown], { type: 'text/markdown' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `verification-report-${Date.now()}.md`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+function CopyYamlButton({ logs }: CopyYamlButtonProps) {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopyYaml = async () => {
+        try {
+            const yamlStr = dump(logs, {
+                indent: 2,
+                lineWidth: -1, // Don't allow line folding
+                noRefs: true,
+            });
+            await navigator.clipboard.writeText(yamlStr);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error('Failed to copy YAML:', err);
+        }
     };
 
     return (
         <button
-            onClick={handleExport}
-            className="w-full py-2 px-4 bg-action-primary text-white text-footnote font-medium rounded-button hover:bg-action-hover transition-colors"
+            onClick={handleCopyYaml}
+            className="w-full py-2 px-4 bg-action-primary text-white text-footnote font-medium rounded-button hover:bg-action-hover transition-colors flex items-center justify-center gap-2"
         >
-            Markdownレポート出力
+            {copied ? (
+                <>
+                    <Check className="w-4 h-4" />
+                    <span>コピーしました</span>
+                </>
+            ) : (
+                <>
+                    <FileText className="w-4 h-4" />
+                    <span>YAMLをコピー</span>
+                </>
+            )}
         </button>
     );
 }
 
-// ============================================
-// Markdown Report Generator
-// ============================================
-
-function generateMarkdownReport(logs: LogEntry[]): string {
-    const now = new Date().toISOString();
-
-    let md = `# Verification Report\n\n`;
-    md += `**Generated:** ${now}\n\n`;
-    md += `---\n\n`;
-    md += `## Log Entries\n\n`;
-
-    for (const log of logs) {
-        const time = new Date(log.timestamp).toISOString();
-        md += `### ${log.type.toUpperCase()}: ${log.title}\n`;
-        md += `**Time:** ${time}\n\n`;
-        md += `\`\`\`json\n${JSON.stringify(log.data, null, 2)}\n\`\`\`\n\n`;
-    }
-
-    return md;
-}

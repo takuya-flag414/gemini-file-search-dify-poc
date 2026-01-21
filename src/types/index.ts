@@ -8,6 +8,7 @@
 
 export interface AppConfig {
     apiKey: string;
+    workflowApiKey: string;  // Backend B (Workflow) API Key
     baseUrl: string;
     userName: string;
     mockMode: boolean;
@@ -15,6 +16,7 @@ export interface AppConfig {
 
 export const DEFAULT_CONFIG: AppConfig = {
     apiKey: '',
+    workflowApiKey: '',
     baseUrl: 'https://api.dify.ai/v1',
     userName: 'poc-verifier',
     mockMode: false,
@@ -286,3 +288,66 @@ export type FinderViewMode = 'grid' | 'list';
  * App view mode - Chat or Finder
  */
 export type AppViewMode = 'chat' | 'finder';
+
+// ============================================
+// Backend B Workflow Types
+// ============================================
+
+/**
+ * Workflow action types for Backend B
+ */
+export type WorkflowAction =
+    | 'list_stores'
+    | 'list_files'
+    | 'upload_file'
+    | 'delete_file'
+    | 'delete_store';
+
+/**
+ * Payload structure for workflow actions
+ */
+export interface WorkflowPayload {
+    storeName?: string;
+    displayName?: string;
+    documentId?: string;
+    pageToken?: string;
+    customMetadata?: Array<{ key: string; string_value: string }>;
+}
+
+/**
+ * Workflow run request body
+ */
+export interface WorkflowRunRequest {
+    inputs: {
+        action: WorkflowAction;
+        payload: string; // JSON string
+    };
+    response_mode: 'blocking' | 'streaming';
+    user: string;
+    files?: Array<{
+        type: 'document';
+        transfer_method: 'local_file';
+        upload_file_id: string;
+    }>;
+}
+
+/**
+ * Workflow run response (blocking mode)
+ */
+export interface WorkflowRunResponse {
+    workflow_run_id: string;
+    task_id: string;
+    data: {
+        id: string;
+        workflow_id: string;
+        status: 'running' | 'succeeded' | 'failed' | 'stopped';
+        outputs?: {
+            result: string | unknown; // Can be JSON string or already-parsed object/array
+        };
+        error?: string;
+        elapsed_time?: number;
+        total_tokens?: number;
+        created_at: number;
+        finished_at: number;
+    };
+}

@@ -1,5 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import { AppProvider, useApp } from './context/AppContext';
+import { ToastProvider } from './context/ToastContext';
+import { WorkflowLogProvider, useWorkflowLog } from './context/WorkflowLogContext';
 import { MainWindowLayout } from './components/templates/MainWindowLayout';
 import { KnowledgeFinder } from './components/organisms/KnowledgeFinder';
 import { useDifyStream, useGeminiFileSystem } from './hooks';
@@ -11,15 +13,19 @@ import type { WorkflowInputs, HistoryEntry, AppViewMode, StoredFile } from './ty
 
 function AppContent() {
   const { isConfigured } = useApp();
+  const { logs: workflowLogs } = useWorkflowLog();
   const {
     messages,
-    logs,
+    logs: streamLogs,
     thinkingSteps,
     isProcessing,
     error,
     sendMessage,
     uploadFile,
   } = useDifyStream();
+
+  // Combine workflow logs with stream logs (workflow logs first, sorted by timestamp)
+  const logs = [...workflowLogs, ...streamLogs].sort((a, b) => b.timestamp - a.timestamp);
 
   // Phase A: File System Hook
   const {
@@ -204,9 +210,14 @@ function AppContent() {
 function App() {
   return (
     <AppProvider>
-      <AppContent />
+      <ToastProvider>
+        <WorkflowLogProvider>
+          <AppContent />
+        </WorkflowLogProvider>
+      </ToastProvider>
     </AppProvider>
   );
 }
 
 export default App;
+

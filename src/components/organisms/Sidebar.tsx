@@ -91,8 +91,10 @@ export function Sidebar({
                     isOpen={isSettingsOpen}
                     onToggle={() => setIsSettingsOpen(!isSettingsOpen)}
                     apiKey={config.apiKey}
+                    workflowApiKey={config.workflowApiKey}
                     baseUrl={config.baseUrl}
                     onApiKeyChange={(value) => updateConfig({ apiKey: value })}
+                    onWorkflowApiKeyChange={(value) => updateConfig({ workflowApiKey: value })}
                     onBaseUrlChange={(value) => updateConfig({ baseUrl: value })}
                 />
 

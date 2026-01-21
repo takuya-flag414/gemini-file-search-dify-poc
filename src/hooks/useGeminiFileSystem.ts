@@ -1,12 +1,15 @@
 /**
  * useGeminiFileSystem Hook
- * Phase A: React hook for file system operations
+ * Phase A/B: React hook for file system operations
  * Provides state management and actions for Knowledge Stores
+ * Switches between Mock and Real API based on mockMode
  */
 
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import type { FileSearchStore, StoredFile } from '../types';
 import { getMockFileSystem } from '../services/MockFileSystem';
+import { DifyWorkflowClient } from '../services/DifyWorkflowClient';
+import { useApp } from '../context/AppContext';
 
 // ============================================
 // Hook Types
@@ -39,10 +42,25 @@ export interface UseGeminiFileSystemReturn {
 }
 
 // ============================================
+// Common Interface for Mock and Real Client
+// ============================================
+
+interface FileSystemClient {
+    listStores(): Promise<FileSearchStore[]>;
+    listFiles(storeName: string): Promise<StoredFile[]>;
+    uploadFile(storeName: string, file: File, metadata?: Record<string, string | number>): Promise<StoredFile>;
+    deleteFile(storeName: string, documentId: string): Promise<boolean>;
+    createStore(displayName: string): Promise<FileSearchStore>;
+    deleteStore(storeName: string): Promise<boolean>;
+}
+
+// ============================================
 // Hook Implementation
 // ============================================
 
 export function useGeminiFileSystem(): UseGeminiFileSystemReturn {
+    const { config } = useApp();
+
     const [stores, setStores] = useState<FileSearchStore[]>([]);
     const [currentStore, setCurrentStore] = useState<FileSearchStore | null>(null);
     const [files, setFiles] = useState<StoredFile[]>([]);
@@ -51,8 +69,37 @@ export function useGeminiFileSystem(): UseGeminiFileSystemReturn {
     const [isUploading, setIsUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // Get mock file system instance (memoized to prevent unnecessary re-renders)
-    const mockFS = useMemo(() => getMockFileSystem(), []);
+    // Get client based on mockMode
+    const client = useMemo<FileSystemClient>(() => {
+        if (config.mockMode) {
+            console.log('[useGeminiFileSystem] Using Mock client');
+            return getMockFileSystem();
+        }
+        console.log('[useGeminiFileSystem] Using Real API client');
+        const workflowClient = new DifyWorkflowClient(
+            config.baseUrl,
+            config.workflowApiKey,
+            config.userName
+        );
+
+        // Set up debug logging - logs go to console and can be picked up by WorkflowLogContext
+        workflowClient.setLogCallback((type, title, data) => {
+            // Emit custom event for WorkflowLogContext to pick up
+            window.dispatchEvent(new CustomEvent('workflow-log', {
+                detail: { type, title, data }
+            }));
+        });
+
+        return workflowClient;
+    }, [config.mockMode, config.baseUrl, config.workflowApiKey, config.userName]);
+
+    // Reset state when switching between mock and real
+    useEffect(() => {
+        setStores([]);
+        setFiles([]);
+        setCurrentStore(null);
+        setError(null);
+    }, [config.mockMode]);
 
     // ============================================
     // Store Actions
@@ -66,14 +113,16 @@ export function useGeminiFileSystem(): UseGeminiFileSystemReturn {
         setError(null);
 
         try {
-            const storeList = await mockFS.listStores();
+            const storeList = await client.listStores();
             setStores(storeList);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'ストア一覧の取得に失敗しました');
+            const message = err instanceof Error ? err.message : 'ストア一覧の取得に失敗しました';
+            setError(message);
+            console.error('[useGeminiFileSystem] fetchStores error:', err);
         } finally {
             setIsLoadingStores(false);
         }
-    }, [mockFS]);
+    }, [client]);
 
     /**
      * Select a store and fetch its files
@@ -99,16 +148,18 @@ export function useGeminiFileSystem(): UseGeminiFileSystemReturn {
         setError(null);
 
         try {
-            const newStore = await mockFS.createStore(displayName);
+            const newStore = await client.createStore(displayName);
             setStores(prev => [...prev, newStore]);
             return newStore;
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'ストアの作成に失敗しました');
+            const message = err instanceof Error ? err.message : 'ストアの作成に失敗しました';
+            setError(message);
+            console.error('[useGeminiFileSystem] createStore error:', err);
             return null;
         } finally {
             setIsLoadingStores(false);
         }
-    }, [mockFS]);
+    }, [client]);
 
     /**
      * Delete a store
@@ -118,7 +169,7 @@ export function useGeminiFileSystem(): UseGeminiFileSystemReturn {
         setError(null);
 
         try {
-            const success = await mockFS.deleteStore(storeName);
+            const success = await client.deleteStore(storeName);
             if (success) {
                 setStores(prev => prev.filter(s => s.storeName !== storeName));
                 if (currentStore?.storeName === storeName) {
@@ -128,12 +179,14 @@ export function useGeminiFileSystem(): UseGeminiFileSystemReturn {
             }
             return success;
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'ストアの削除に失敗しました');
+            const message = err instanceof Error ? err.message : 'ストアの削除に失敗しました';
+            setError(message);
+            console.error('[useGeminiFileSystem] deleteStore error:', err);
             return false;
         } finally {
             setIsLoadingStores(false);
         }
-    }, [mockFS, currentStore]);
+    }, [client, currentStore]);
 
     // ============================================
     // File Actions
@@ -147,14 +200,16 @@ export function useGeminiFileSystem(): UseGeminiFileSystemReturn {
         setError(null);
 
         try {
-            const fileList = await mockFS.listFiles(storeName);
+            const fileList = await client.listFiles(storeName);
             setFiles(fileList);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'ファイル一覧の取得に失敗しました');
+            const message = err instanceof Error ? err.message : 'ファイル一覧の取得に失敗しました';
+            setError(message);
+            console.error('[useGeminiFileSystem] fetchFiles error:', err);
         } finally {
             setIsLoadingFiles(false);
         }
-    }, [mockFS]);
+    }, [client]);
 
     /**
      * Upload a file to the current store
@@ -172,17 +227,19 @@ export function useGeminiFileSystem(): UseGeminiFileSystemReturn {
         setError(null);
 
         try {
-            const newFile = await mockFS.uploadFile(currentStore.storeName, file, metadata);
+            const newFile = await client.uploadFile(currentStore.storeName, file, metadata);
             // Re-fetch files to ensure consistency (avoid duplicate entries from optimistic update)
             await fetchFiles(currentStore.storeName);
             return newFile;
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'ファイルのアップロードに失敗しました');
+            const message = err instanceof Error ? err.message : 'ファイルのアップロードに失敗しました';
+            setError(message);
+            console.error('[useGeminiFileSystem] uploadFile error:', err);
             return null;
         } finally {
             setIsUploading(false);
         }
-    }, [mockFS, currentStore, fetchFiles]);
+    }, [client, currentStore, fetchFiles]);
 
     /**
      * Delete a file from the current store
@@ -197,18 +254,20 @@ export function useGeminiFileSystem(): UseGeminiFileSystemReturn {
         setError(null);
 
         try {
-            const success = await mockFS.deleteFile(currentStore.storeName, documentId);
+            const success = await client.deleteFile(currentStore.storeName, documentId);
             if (success) {
                 setFiles(prev => prev.filter(f => f.documentId !== documentId));
             }
             return success;
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'ファイルの削除に失敗しました');
+            const message = err instanceof Error ? err.message : 'ファイルの削除に失敗しました';
+            setError(message);
+            console.error('[useGeminiFileSystem] deleteFile error:', err);
             return false;
         } finally {
             setIsLoadingFiles(false);
         }
-    }, [mockFS, currentStore]);
+    }, [client, currentStore]);
 
     // ============================================
     // Utility
