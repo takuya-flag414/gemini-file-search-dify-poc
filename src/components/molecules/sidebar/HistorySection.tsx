@@ -21,7 +21,7 @@ export function HistorySection({
     return (
         <SidebarSection
             title="履歴"
-            icon={<History className="w-4 h-4" />}
+            icon={<History className="w-4 h-4 text-sys-text-secondary" />}
             isOpen={isOpen}
             onToggle={onToggle}
             action={

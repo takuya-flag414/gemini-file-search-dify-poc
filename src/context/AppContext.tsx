@@ -181,7 +181,14 @@ export function AppProvider({ children }: AppProviderProps) {
 
     // Toggle chat panel
     const toggleChatPanel = useCallback(() => {
-        setIsChatPanelOpen(prev => !prev);
+        setIsChatPanelOpen(prev => {
+            const willClose = prev;
+            // Reset expanded state when closing the panel
+            if (willClose) {
+                setIsChatExpanded(false);
+            }
+            return !prev;
+        });
     }, []);
 
     // Open chat panel (for workflow execution)

@@ -69,11 +69,58 @@ export function useGeminiFileSystem(): UseGeminiFileSystemReturn {
     const [isUploading, setIsUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
+    // Helper to dispatch log events (for Backend B logging)
+    const dispatchLog = useCallback((type: 'request' | 'response' | 'error', title: string, data: unknown) => {
+        window.dispatchEvent(new CustomEvent('workflow-log', {
+            detail: { type, title, data }
+        }));
+    }, []);
+
     // Get client based on mockMode
     const client = useMemo<FileSystemClient>(() => {
         if (config.mockMode) {
             console.log('[useGeminiFileSystem] Using Mock client');
-            return getMockFileSystem();
+            const mockFs = getMockFileSystem();
+
+            // Create a logging wrapper around mock client
+            return {
+                async listStores(): Promise<FileSearchStore[]> {
+                    dispatchLog('request', '[Mock] ストア一覧取得', { action: 'list_stores' });
+                    const result = await mockFs.listStores();
+                    dispatchLog('response', '[Mock] ストア一覧', { count: result.length, stores: result.map(s => s.displayName) });
+                    return result;
+                },
+                async listFiles(storeName: string): Promise<StoredFile[]> {
+                    dispatchLog('request', '[Mock] ファイル一覧取得', { action: 'list_files', storeName });
+                    const result = await mockFs.listFiles(storeName);
+                    dispatchLog('response', '[Mock] ファイル一覧', { count: result.length, files: result.map(f => f.displayName) });
+                    return result;
+                },
+                async uploadFile(storeName: string, file: File, metadata?: Record<string, string | number>): Promise<StoredFile> {
+                    dispatchLog('request', '[Mock] ファイルアップロード', { action: 'upload_file', storeName, fileName: file.name, size: file.size, metadata });
+                    const result = await mockFs.uploadFile(storeName, file, metadata);
+                    dispatchLog('response', '[Mock] アップロード完了', { documentId: result.documentId, displayName: result.displayName });
+                    return result;
+                },
+                async deleteFile(storeName: string, documentId: string): Promise<boolean> {
+                    dispatchLog('request', '[Mock] ファイル削除', { action: 'delete_file', storeName, documentId });
+                    const result = await mockFs.deleteFile(storeName, documentId);
+                    dispatchLog('response', '[Mock] 削除完了', { success: result });
+                    return result;
+                },
+                async createStore(displayName: string): Promise<FileSearchStore> {
+                    dispatchLog('request', '[Mock] ストア作成', { action: 'create_store', displayName });
+                    const result = await mockFs.createStore(displayName);
+                    dispatchLog('response', '[Mock] ストア作成完了', { storeName: result.storeName, displayName: result.displayName });
+                    return result;
+                },
+                async deleteStore(storeName: string): Promise<boolean> {
+                    dispatchLog('request', '[Mock] ストア削除', { action: 'delete_store', storeName });
+                    const result = await mockFs.deleteStore(storeName);
+                    dispatchLog('response', '[Mock] ストア削除完了', { success: result });
+                    return result;
+                },
+            };
         }
         console.log('[useGeminiFileSystem] Using Real API client');
         const workflowClient = new DifyWorkflowClient(
@@ -91,7 +138,7 @@ export function useGeminiFileSystem(): UseGeminiFileSystemReturn {
         });
 
         return workflowClient;
-    }, [config.mockMode, config.baseUrl, config.workflowApiKey, config.userName]);
+    }, [config.mockMode, config.baseUrl, config.workflowApiKey, config.userName, dispatchLog]);
 
     // Reset state when switching between mock and real
     useEffect(() => {
@@ -290,8 +337,13 @@ export function useGeminiFileSystem(): UseGeminiFileSystemReturn {
     }, [currentStore?.storeName]);
 
     // Initial fetch of stores
+    // Delay slightly to ensure WorkflowLogContext event listener is set up
     useEffect(() => {
-        fetchStores();
+        const timeoutId = setTimeout(() => {
+            fetchStores();
+        }, 50); // Small delay to ensure event listener is registered
+
+        return () => clearTimeout(timeoutId);
     }, [fetchStores]);
 
     return {

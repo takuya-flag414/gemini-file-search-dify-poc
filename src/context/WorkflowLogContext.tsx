@@ -41,6 +41,7 @@ export function WorkflowLogProvider({ children }: WorkflowLogProviderProps) {
             type,
             title,
             data,
+            backendId: 'backend-b',  // Workflow backend
         };
 
         // Also log to console for debugging

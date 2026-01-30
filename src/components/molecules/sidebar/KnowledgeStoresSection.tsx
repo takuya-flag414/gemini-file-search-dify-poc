@@ -129,17 +129,10 @@ export function KnowledgeStoresSection({
                                 {/* 左インジケータ */}
                                 {isSelected && (
                                     <motion.div
-                                        layoutId="store-selection-indicator"
-                                        className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r bg-action-primary"
-                                        transition={{
-                                            type: 'spring',
-                                            stiffness: 300,
-                                            damping: 30,
-                                        }}
                                     />
                                 )}
-                                <span className="text-lg relative z-10">📁</span>
-                                <span className="text-footnote truncate flex-1 relative z-10">
+                                <Database className="w-4 h-4 text-action-primary flex-shrink-0" />
+                                <span className="text-footnote truncate flex-1 relative z-10 text-sys-text-primary">
                                     {store.displayName}
                                 </span>
 

@@ -1,5 +1,5 @@
 export { SidebarSection } from './SidebarSection';
-export { TrafficLights } from './TrafficLights';
+export { SidebarHeader } from './SidebarHeader';
 export { HistoryItem } from './HistoryItem';
 export { KnowledgeStoresSection } from './KnowledgeStoresSection';
 export { WorkflowSection } from './WorkflowSection';

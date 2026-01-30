@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import {
-    TrafficLights,
+    SidebarHeader,
     KnowledgeStoresSection,
     WorkflowSection,
     SettingsSection,
@@ -54,14 +54,14 @@ export function Sidebar({
     } = useApp();
 
     const [isKnowledgeStoresOpen, setIsKnowledgeStoresOpen] = useState(true);
-    const [isWorkflowOpen, setIsWorkflowOpen] = useState(true);
+    const [isWorkflowOpen, setIsWorkflowOpen] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
     return (
         <aside className="w-sidebar h-full flex flex-col glass-sidebar border-r border-sys-separator">
-            {/* Traffic Lights */}
-            <TrafficLights />
+            {/* App Title */}
+            <SidebarHeader />
 
             {/* Sidebar Content */}
             <div className="flex-1 overflow-y-auto px-4 py-2">

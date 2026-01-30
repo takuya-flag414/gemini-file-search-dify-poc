@@ -5,10 +5,12 @@ import type { ReactNode } from 'react';
 // ============================================
 
 type BadgeVariant = 'default' | 'success' | 'warning' | 'danger' | 'info';
+type BadgeSize = 'sm' | 'md';
 
 interface BadgeProps {
     children: ReactNode;
     variant?: BadgeVariant;
+    size?: BadgeSize;
     className?: string;
 }
 
@@ -20,14 +22,19 @@ const variantStyles: Record<BadgeVariant, string> = {
     info: 'bg-action-primary/10 text-action-primary',
 };
 
-export function Badge({ children, variant = 'default', className = '' }: BadgeProps) {
+const sizeStyles: Record<BadgeSize, string> = {
+    sm: 'px-1.5 py-0.5 text-caption-2',
+    md: 'px-2 py-0.5 text-caption-1',
+};
+
+export function Badge({ children, variant = 'default', size = 'md', className = '' }: BadgeProps) {
     return (
         <span
             className={`
         inline-flex items-center 
-        px-2 py-0.5 
-        text-caption-1 font-medium
+        font-medium
         rounded-full
+        ${sizeStyles[size]}
         ${variantStyles[variant]}
         ${className}
       `.trim().replace(/\s+/g, ' ')}
@@ -36,3 +43,4 @@ export function Badge({ children, variant = 'default', className = '' }: BadgePr
         </span>
     );
 }
+

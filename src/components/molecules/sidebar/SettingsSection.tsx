@@ -26,7 +26,7 @@ export function SettingsSection({
     return (
         <SidebarSection
             title="設定"
-            icon={<Settings className="w-4 h-4" />}
+            icon={<Settings className="w-4 h-4 text-sys-text-secondary" />}
             isOpen={isOpen}
             onToggle={onToggle}
         >

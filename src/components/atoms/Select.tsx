@@ -39,7 +39,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
                         id={selectId}
                         className={`
                             h-9 w-full px-3 pr-10
-                            bg-sys-bg-alt/50 text-sys-text-primary
+                            bg-sys-bg-base text-sys-text-primary
                             border border-sys-separator rounded-lg
                             text-subheadline
                             appearance-none cursor-pointer

@@ -8,6 +8,7 @@ import type {
     HistoryEntry,
     DifyMessageEvent,
     DifyMessageEndEvent,
+    DifyWorkflowStartedEvent,
     DifyNodeStartedEvent,
     DifyNodeFinishedEvent,
 } from '../types';
@@ -50,13 +51,21 @@ export function useDifyStream(): UseDifyStreamReturn {
     const currentMessageIdRef = useRef<string | null>(null);
 
     // Add log entry
-    const addLog = useCallback((type: LogEntry['type'], title: string, data: unknown) => {
+    const addLog = useCallback((
+        type: LogEntry['type'],
+        title: string,
+        data: unknown,
+        options?: { workflowRunId?: string; nodeId?: string }
+    ) => {
         const entry: LogEntry = {
             id: generateId(),
             timestamp: Date.now(),
             type,
             title,
             data,
+            backendId: 'backend-a',  // Chatflow backend
+            workflowRunId: options?.workflowRunId,
+            nodeId: options?.nodeId,
         };
         setLogs(prev => [...prev, entry]);
         return entry;
@@ -134,6 +143,7 @@ export function useDifyStream(): UseDifyStreamReturn {
             let fullContent = '';
             let citations: ChatMessage['citations'] = [];
             let conversationId: string | undefined;
+            let currentWorkflowRunId: string | undefined;
 
             for await (const event of client.sendChatMessage(inputs, query, sessionConversationId || undefined)) {
                 // Handle different event types
@@ -163,31 +173,40 @@ export function useDifyStream(): UseDifyStreamReturn {
                             citations = endEvent.metadata.retriever_resources;
                         }
 
-                        addLog('response', 'ワークフロー完了', endEvent.metadata);
+                        addLog('response', 'ワークフロー完了', endEvent.metadata, { workflowRunId: currentWorkflowRunId });
                         break;
                     }
 
                     case 'node_started': {
                         const nodeEvent = event as DifyNodeStartedEvent;
                         const stepName = nodeEvent.data.title;
+                        currentWorkflowRunId = nodeEvent.workflow_run_id;
                         setThinkingSteps(prev => [...prev, stepName]);
-                        addLog('node', `ノード開始: ${stepName}`, nodeEvent.data);
+                        addLog('node', `ノード開始: ${stepName}`, nodeEvent.data, {
+                            workflowRunId: nodeEvent.workflow_run_id,
+                            nodeId: nodeEvent.data.node_id
+                        });
                         break;
                     }
 
                     case 'node_finished': {
                         const nodeEvent = event as DifyNodeFinishedEvent;
-                        addLog('node', `ノード完了: ${nodeEvent.data.title}`, nodeEvent.data);
+                        addLog('node', `ノード完了: ${nodeEvent.data.title}`, nodeEvent.data, {
+                            workflowRunId: nodeEvent.workflow_run_id,
+                            nodeId: nodeEvent.data.node_id
+                        });
                         break;
                     }
 
                     case 'workflow_started': {
-                        addLog('system', 'ワークフロー開始', event);
+                        const wfEvent = event as DifyWorkflowStartedEvent;
+                        currentWorkflowRunId = wfEvent.workflow_run_id;
+                        addLog('system', 'ワークフロー開始', event, { workflowRunId: wfEvent.workflow_run_id });
                         break;
                     }
 
                     case 'error': {
-                        addLog('error', 'エラー発生', event);
+                        addLog('error', 'エラー発生', event, { workflowRunId: currentWorkflowRunId });
                         throw new Error((event as { message: string }).message);
                     }
                 }

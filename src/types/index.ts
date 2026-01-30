@@ -101,12 +101,25 @@ export interface ChatMessage {
 
 export type LogEntryType = 'request' | 'response' | 'system' | 'error' | 'node';
 
+/**
+ * Backend identifier for log grouping
+ * - 'backend-a': Chatflow (AIagent_Rag_poc) - for chat/search operations
+ * - 'backend-b': Workflow (Backend B - Gemini File Search) - for file operations
+ */
+export type BackendId = 'backend-a' | 'backend-b';
+
 export interface LogEntry {
     id: string;
     timestamp: number;
     type: LogEntryType;
     title: string;
     data: unknown;
+    /** Which backend generated this log */
+    backendId?: BackendId;
+    /** Workflow run ID for grouping workflow events */
+    workflowRunId?: string;
+    /** Node ID for node-level identification */
+    nodeId?: string;
 }
 
 // ============================================

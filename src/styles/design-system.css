@@ -55,7 +55,7 @@
 /* Dark Mode */
 .dark {
   --sys-bg-base: #1C1C1E;
-  --sys-bg-alt: #000000;
+  --sys-bg-alt: rgba(255, 255, 255, 0.1);
 
   --sys-text-primary: #F5F5F7;
   --sys-text-secondary: #A1A1A6;
@@ -218,8 +218,15 @@
   -webkit-backdrop-filter: blur(50px) saturate(200%);
   border: 1px solid rgba(255, 255, 255, 0.4);
   box-shadow:
-    0 20px 50px rgba(0, 0, 0, 0.15),
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
     0 0 0 0.5px rgba(255, 255, 255, 0.5) inset;
+}
+
+.dark .glass-hud {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+    0 0 0 0.5px rgba(255, 255, 255, 0.2) inset;
 }
 
 .glass-popover {
@@ -351,14 +358,12 @@
   content: "";
   position: absolute;
   inset: -2px;
-  background: conic-gradient(
-    from 0deg,
-    var(--ai-gradient-cyan),
-    var(--ai-gradient-magenta),
-    var(--ai-gradient-yellow),
-    var(--ai-gradient-blue),
-    var(--ai-gradient-cyan)
-  );
+  background: conic-gradient(from 0deg,
+      var(--ai-gradient-cyan),
+      var(--ai-gradient-magenta),
+      var(--ai-gradient-yellow),
+      var(--ai-gradient-blue),
+      var(--ai-gradient-cyan));
   filter: blur(8px);
   z-index: -1;
   border-radius: inherit;

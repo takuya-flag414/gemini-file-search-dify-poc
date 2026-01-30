@@ -56,13 +56,13 @@ export function MainWindowLayout({
     const { isInspectorOpen, toggleInspector, isChatPanelOpen, toggleChatPanel, isChatExpanded } = useApp();
 
     return (
-        <div className="h-screen w-screen overflow-hidden" style={{ background: 'var(--immersive-bg)' }}>
-            {/* Window Container */}
+        <div className="h-screen w-screen overflow-hidden bg-[white]" style={{ background: 'var(--immersive-bg)' }}>
+            {/* Fullscreen Container */}
             <motion.div
-                initial={{ opacity: 0, scale: 0.98, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ type: 'spring', stiffness: 250, damping: 25 }}
-                className="relative h-[calc(100%-24px)] w-[calc(100%-24px)] m-3 flex immersive-window"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                className="relative h-full w-full flex"
             >
                 {/* Sidebar */}
                 <Sidebar
@@ -82,7 +82,7 @@ export function MainWindowLayout({
 
                 {/* Main Content - Hidden when chat is expanded */}
                 {!isChatExpanded && (
-                    <main className="flex-1 flex flex-col bg-sys-bg-base overflow-hidden">
+                    <main className="flex-1 flex flex-col bg-sys-bg-base overflow-hidden relative z-10 shadow-xl">
                         {/* Toolbar */}
                         <Toolbar
                             onToggleChatPanel={toggleChatPanel}
@@ -134,9 +134,7 @@ function Toolbar({ onToggleChatPanel, isChatPanelOpen, onToggleInspector, isInsp
     return (
         <header className="h-toolbar flex items-center justify-between px-4 border-b border-sys-separator glass-header">
             <div className="flex items-center gap-3">
-                <h1 className="text-headline text-sys-text-primary">
-                    Gemini File Search PoC
-                </h1>
+
             </div>
 
             <div className="flex items-center gap-2">
