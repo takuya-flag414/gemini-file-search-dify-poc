@@ -41,17 +41,18 @@ interface MenuItemProps {
 
 function MenuItem({ icon, label, shortcut, isDanger = false, onClick }: MenuItemProps) {
     return (
-        <motion.button
+        <button
             onClick={onClick}
-            whileHover={{ backgroundColor: isDanger ? 'rgba(255, 69, 58, 0.15)' : 'rgba(0, 122, 255, 0.1)' }}
-            whileTap={{ scale: 0.96 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 17 }}
             className={`
                 w-full flex items-center gap-3 px-3 py-2
                 text-left text-subheadline
                 rounded-md
-                transition-colors
-                ${isDanger ? 'text-feedback-danger' : 'text-sys-text-primary'}
+                transition-all duration-200 ease-out
+                active:scale-[0.96]
+                ${isDanger
+                    ? 'text-feedback-danger hover:bg-[#FF453A]/15 active:bg-[#FF453A]/25'
+                    : 'text-sys-text-primary hover:bg-[#007AFF]/10 active:bg-[#007AFF]/20'
+                }
             `}
         >
             <span className="w-5 text-center">{icon}</span>
@@ -61,7 +62,7 @@ function MenuItem({ icon, label, shortcut, isDanger = false, onClick }: MenuItem
                     {shortcut}
                 </span>
             )}
-        </motion.button>
+        </button>
     );
 }
 
@@ -172,7 +173,7 @@ export function FileContextMenu({
                 >
                     <MenuItem
                         icon="👁️"
-                        label="プレビュー"
+                        label="詳細"
                         shortcut="Space"
                         onClick={handlePreview}
                     />

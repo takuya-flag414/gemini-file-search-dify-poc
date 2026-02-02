@@ -10,6 +10,7 @@ import type { FileSearchStore, StoredFile } from '../types';
 import { getMockFileSystem } from '../services/MockFileSystem';
 import { DifyWorkflowClient } from '../services/DifyWorkflowClient';
 import { useApp } from '../context/AppContext';
+import { convertMdToTxt } from '../utils/fileConversion';
 
 // ============================================
 // Hook Types
@@ -48,7 +49,7 @@ export interface UseGeminiFileSystemReturn {
 interface FileSystemClient {
     listStores(): Promise<FileSearchStore[]>;
     listFiles(storeName: string): Promise<StoredFile[]>;
-    uploadFile(storeName: string, file: File, metadata?: Record<string, string | number>): Promise<StoredFile>;
+    uploadFile(storeName: string, file: File, displayName: string, metadata?: Record<string, string | number>): Promise<StoredFile>;
     deleteFile(storeName: string, documentId: string): Promise<boolean>;
     createStore(displayName: string): Promise<FileSearchStore>;
     deleteStore(storeName: string): Promise<boolean>;
@@ -96,9 +97,9 @@ export function useGeminiFileSystem(): UseGeminiFileSystemReturn {
                     dispatchLog('response', '[Mock] ファイル一覧', { count: result.length, files: result.map(f => f.displayName) });
                     return result;
                 },
-                async uploadFile(storeName: string, file: File, metadata?: Record<string, string | number>): Promise<StoredFile> {
-                    dispatchLog('request', '[Mock] ファイルアップロード', { action: 'upload_file', storeName, fileName: file.name, size: file.size, metadata });
-                    const result = await mockFs.uploadFile(storeName, file, metadata);
+                async uploadFile(storeName: string, file: File, displayName: string, metadata?: Record<string, string | number>): Promise<StoredFile> {
+                    dispatchLog('request', '[Mock] ファイルアップロード', { action: 'upload_file', storeName, fileName: file.name, displayName, size: file.size, metadata });
+                    const result = await mockFs.uploadFile(storeName, file, displayName, metadata);
                     dispatchLog('response', '[Mock] アップロード完了', { documentId: result.documentId, displayName: result.displayName });
                     return result;
                 },
@@ -274,7 +275,13 @@ export function useGeminiFileSystem(): UseGeminiFileSystemReturn {
         setError(null);
 
         try {
-            const newFile = await client.uploadFile(currentStore.storeName, file, metadata);
+            // Display Name is always the original name
+            const displayName = file.name;
+
+            // Convert MD to TXT if necessary
+            const fileToUpload = await convertMdToTxt(file);
+
+            const newFile = await client.uploadFile(currentStore.storeName, fileToUpload, displayName, metadata);
             // Re-fetch files to ensure consistency (avoid duplicate entries from optimistic update)
             await fetchFiles(currentStore.storeName);
             return newFile;

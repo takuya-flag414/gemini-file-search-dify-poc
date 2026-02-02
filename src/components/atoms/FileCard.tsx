@@ -104,12 +104,12 @@ export function FileCard({ file, onSelect, onDelete, isSelected = false }: FileC
                 className="
                     absolute top-2 right-2 z-10
                     w-6 h-6 rounded-full
-                    bg-feedback-danger/80 text-white
                     flex items-center justify-center
                     opacity-0 group-hover:opacity-100
-                    transition-opacity duration-150
+                    transition-all duration-200
                     text-xs font-bold
-                    hover:bg-feedback-danger
+                    bg-black/10 text-sys-text-secondary dark:bg-white/10 dark:text-sys-text-secondary
+                    hover:bg-feedback-danger hover:text-white dark:hover:bg-feedback-danger dark:hover:text-white
                 "
                 title="ファイルを削除"
             >

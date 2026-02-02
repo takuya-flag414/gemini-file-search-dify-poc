@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Database, Plus, Trash2 } from 'lucide-react';
+import { Folder, Plus, Trash2 } from 'lucide-react';
 import { SidebarSection } from './SidebarSection';
 import { useApp } from '../../../context/AppContext';
 import type { FileSearchStore } from '../../../types';
@@ -55,7 +55,7 @@ export function KnowledgeStoresSection({
     return (
         <SidebarSection
             title="① ストア選択"
-            icon={<Database className="w-4 h-4 text-action-primary" />}
+            icon={<Folder className="w-4 h-4 text-action-primary" />}
             isOpen={isOpen}
             onToggle={onToggle}
             action={
@@ -131,7 +131,7 @@ export function KnowledgeStoresSection({
                                     <motion.div
                                     />
                                 )}
-                                <Database className="w-4 h-4 text-action-primary flex-shrink-0" />
+                                <Folder className="w-4 h-4 text-action-primary flex-shrink-0" />
                                 <span className="text-footnote truncate flex-1 relative z-10 text-sys-text-primary">
                                     {store.displayName}
                                 </span>

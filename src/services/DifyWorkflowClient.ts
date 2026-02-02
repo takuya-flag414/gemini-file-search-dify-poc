@@ -233,6 +233,7 @@ export class DifyWorkflowClient {
     async uploadFile(
         storeName: string,
         file: File,
+        displayName: string,
         metadata: Record<string, string | number> = {}
     ): Promise<StoredFile> {
         // Step 1: Upload file to Dify temporary storage
@@ -249,7 +250,7 @@ export class DifyWorkflowClient {
             'upload_file',
             {
                 storeName,
-                displayName: file.name,
+                displayName: displayName, // Use separate display name
                 customMetadata,
             },
             [{

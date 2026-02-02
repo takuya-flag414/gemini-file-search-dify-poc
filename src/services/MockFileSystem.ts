@@ -238,6 +238,7 @@ export class MockFileSystem {
     async uploadFile(
         storeName: string,
         file: File,
+        displayName: string,
         metadata: Record<string, string | number> = {}
     ): Promise<StoredFile> {
         // Simulate upload progress (faster for better UX)
@@ -250,15 +251,15 @@ export class MockFileSystem {
         const storeFiles = this.files.get(storeName) || [];
 
         // Remove existing file with the same name to prevent duplicates
-        const existingIndex = storeFiles.findIndex(f => f.displayName === file.name);
+        const existingIndex = storeFiles.findIndex(f => f.displayName === displayName);
         if (existingIndex !== -1) {
             storeFiles.splice(existingIndex, 1);
         }
 
         const newFile: StoredFile = {
             documentId: `doc-${generateId()}`,
-            displayName: file.name,
-            mimeType: getMimeType(file.name),
+            displayName: displayName, // Use provided display name
+            mimeType: getMimeType(file.name), // Use actual file name for MIME type (will show .txt for converted files)
             sizeBytes: file.size,
             createTime: new Date().toISOString(),
             state: 'ACTIVE',

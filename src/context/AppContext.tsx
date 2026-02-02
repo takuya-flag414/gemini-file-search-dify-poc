@@ -111,7 +111,7 @@ export function AppProvider({ children }: AppProviderProps) {
     });
 
     // Inspector State
-    const [isInspectorOpen, setIsInspectorOpen] = useState(true);
+    const [isInspectorOpen, setIsInspectorOpen] = useState(false);
 
     // Chat Panel State
     const [isChatPanelOpen, setIsChatPanelOpen] = useState(false);

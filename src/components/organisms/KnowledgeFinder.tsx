@@ -7,10 +7,10 @@
 
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { LayoutGrid, List, Search, Plus, Folder, Filter } from 'lucide-react';
 import type { FileSearchStore, StoredFile, FinderViewMode } from '../../types';
 import { FileCard } from '../atoms/FileCard';
 import { FileListItem } from '../atoms/FileListItem';
-import { SearchBar } from '../atoms/SearchBar';
 import { FilterChips, type ActiveFilters } from '../atoms/FilterChips';
 import { FileDetailPanel } from '../molecules/FileDetailPanel';
 import { FileContextMenu } from '../molecules/FileContextMenu';
@@ -43,30 +43,32 @@ interface ViewToggleProps {
 
 function ViewToggle({ mode, onChange }: ViewToggleProps) {
     return (
-        <div className="flex bg-sys-bg-alt rounded-lg p-1 gap-1">
+        <div className="flex bg-sys-bg-alt/50 p-0.5 rounded-lg border border-sys-separator/20">
             <button
                 onClick={() => onChange('grid')}
                 className={`
-                    px-3 py-1.5 rounded-md text-footnote transition-all
+                    p-1.5 rounded-md transition-all
                     ${mode === 'grid'
                         ? 'bg-sys-bg-base text-sys-text-primary shadow-sm'
-                        : 'text-sys-text-secondary hover:text-sys-text-primary'
+                        : 'text-sys-text-tertiary hover:text-sys-text-primary hover:bg-black/5 dark:hover:bg-white/5'
                     }
                 `}
+                title="Grid View"
             >
-                ⊞ Grid
+                <LayoutGrid size={16} />
             </button>
             <button
                 onClick={() => onChange('list')}
                 className={`
-                    px-3 py-1.5 rounded-md text-footnote transition-all
+                    p-1.5 rounded-md transition-all
                     ${mode === 'list'
                         ? 'bg-sys-bg-base text-sys-text-primary shadow-sm'
-                        : 'text-sys-text-secondary hover:text-sys-text-primary'
+                        : 'text-sys-text-tertiary hover:text-sys-text-primary hover:bg-black/5 dark:hover:bg-white/5'
                     }
                 `}
+                title="List View"
             >
-                ☰ List
+                <List size={16} />
             </button>
         </div>
     );
@@ -139,6 +141,7 @@ export function KnowledgeFinder({
     const [selectedFiles, setSelectedFiles] = useState<StoredFile[]>([]);
     const [isWizardOpen, setIsWizardOpen] = useState(false);
     const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
+    const [isFilterBarOpen, setIsFilterBarOpen] = useState(false);
 
     // Context Menu State
     const [contextMenuFile, setContextMenuFile] = useState<StoredFile | null>(null);
@@ -369,64 +372,116 @@ export function KnowledgeFinder({
             className="flex flex-col h-full bg-sys-bg-base"
         >
             {/* Header / Toolbar */}
-            <div className="
-                flex items-center justify-between gap-4
-                px-6 py-4 border-b border-sys-separator
-                glass-header
-            ">
-                {/* Left: Store Name */}
-                <div className="flex items-center gap-3 flex-shrink-0">
-                    <span className="text-subheadline text-sys-text-primary font-medium">
-                        {store.displayName}
-                    </span>
+            <div className="flex flex-col sticky top-0 z-10 bg-sys-bg-base/80 backdrop-blur-md border-b border-sys-separator/50">
+                <div className="flex items-center justify-between px-5 py-3">
+                    {/* Left: Store Name & Info */}
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-sys-color-primary/10 rounded-lg">
+                            <Folder className="w-5 h-5 text-sys-color-primary" />
+                        </div>
+                        <div className="flex flex-col">
+                            <div className="flex items-center gap-2">
+                                <span className="text-headline font-semibold text-sys-text-primary tracking-tight">
+                                    {store.displayName}
+                                </span>
+                                <span className="px-2 py-0.5 rounded-full bg-sys-bg-alt text-caption-2 text-sys-text-secondary font-medium">
+                                    {files.length}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right: Tools Area */}
+                    <div className="flex items-center gap-3">
+                        {/* Search Input (Compact) */}
+                        <div className="relative w-64 group">
+                            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-sys-text-tertiary group-focus-within:text-sys-color-primary transition-colors" />
+                            <input
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="
+                                    w-full pl-9 pr-3 py-1.5 
+                                    bg-black/5 dark:bg-white/10
+                                    rounded-lg 
+                                    text-callout text-sys-text-primary
+                                    placeholder:text-sys-text-tertiary
+                                    border border-transparent 
+                                    focus:bg-sys-bg-base focus:border-sys-color-primary/30 focus:ring-4 focus:ring-sys-color-primary/10
+                                    shadow-sm 
+                                    transition-all duration-200
+                                    outline-none
+                                "
+                                placeholder="検索..."
+                            />
+                        </div>
+
+                        {/* Divider */}
+                        <div className="h-6 w-px bg-sys-separator/50 mx-1" />
+
+                        {/* View Toggle */}
+                        <ViewToggle mode={viewMode} onChange={setViewMode} />
+
+                        {/* Filter Toggle */}
+                        <button
+                            onClick={() => setIsFilterBarOpen(!isFilterBarOpen)}
+                            className={`
+                                p-1.5 rounded-md transition-all
+                                ${isFilterBarOpen || hasActiveFilters
+                                    ? 'bg-sys-bg-alt text-sys-text-primary shadow-sm ring-1 ring-sys-separator/50'
+                                    : 'text-sys-text-tertiary hover:text-sys-text-primary hover:bg-sys-bg-alt/50'
+                                }
+                            `}
+                            title="Filter"
+                        >
+                            <Filter size={16} className={hasActiveFilters ? 'text-sys-color-primary' : ''} />
+                        </button>
+
+                        {/* Upload Action */}
+                        <button
+                            onClick={handleUploadButtonClick}
+                            disabled={isUploading}
+                            className="
+                                flex items-center gap-2
+                                px-3 py-1.5 rounded-lg
+                                bg-action-primary text-white
+                                hover:brightness-110 active:scale-95
+                                shadow-sm shadow-sys-color-primary/20
+                                transition-all duration-200
+                                disabled:opacity-50 disabled:cursor-not-allowed
+                            "
+                        >
+                            {isUploading ? (
+                                <span className="animate-spin w-4 h-4 border-2 border-white/30 border-t-white rounded-full" />
+                            ) : (
+                                <Plus size={16} strokeWidth={2.5} />
+                            )}
+                            <span className="text-footnote font-semibold">
+                                {isUploading ? '処理中' : 'アップロード'}
+                            </span>
+                        </button>
+                    </div>
                 </div>
 
-                {/* Center: Search Bar */}
-                <div className="flex-1 max-w-md">
-                    <SearchBar
-                        value={searchQuery}
-                        onChange={setSearchQuery}
-                        placeholder="ファイル名で検索..."
-                    />
-                </div>
-
-                {/* Right: Actions */}
-                <div className="flex items-center gap-3 flex-shrink-0">
-                    <ViewToggle mode={viewMode} onChange={setViewMode} />
-
-                    <button
-                        onClick={handleUploadButtonClick}
-                        disabled={isUploading}
-                        className="
-                            px-4 py-2 rounded-lg
-                            bg-action-primary text-white
-                            text-footnote font-medium
-                            hover:bg-action-hover transition-colors
-                            disabled:opacity-50 disabled:cursor-not-allowed
-                            flex items-center gap-2
-                        "
-                    >
-                        {isUploading ? (
-                            <>
-                                <span className="animate-spin">⏳</span>
-                                アップロード中...
-                            </>
-                        ) : (
-                            <>
-                                <span>+</span>
-                                アップロード
-                            </>
-                        )}
-                    </button>
-                </div>
+                {/* Scope Bar (Filter Components) */}
+                <AnimatePresence>
+                    {(isFilterBarOpen || hasActiveFilters) && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="border-t border-sys-separator/50 bg-sys-bg-alt/30 overflow-hidden"
+                        >
+                            <div className="px-5 py-2">
+                                <FilterChips
+                                    activeFilters={activeFilters}
+                                    availableValues={availableValues}
+                                    onChange={setActiveFilters}
+                                />
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
-
-            {/* Filter Chips */}
-            <FilterChips
-                activeFilters={activeFilters}
-                availableValues={availableValues}
-                onChange={setActiveFilters}
-            />
 
             {/* Content Area */}
             <div className="flex-1 overflow-auto">
