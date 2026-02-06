@@ -1,12 +1,10 @@
-import { X, Maximize2, Minimize2 } from 'lucide-react';
-import { motion } from 'framer-motion';
 import { useApp } from '../../context/AppContext';
 import { ChatTimeline } from './ChatTimeline';
 import { ChatInputArea } from '../molecules/chat/ChatInputArea';
 import type { ChatMessage } from '../../types';
 
 // ============================================
-// Chat Panel Component
+// Chat Panel Component (Right Panel Tab Content)
 // ============================================
 
 interface ChatPanelProps {
@@ -22,11 +20,7 @@ export function ChatPanel({
     isProcessing = false,
     onSearchSubmit,
 }: ChatPanelProps) {
-    const { isChatPanelOpen, toggleChatPanel, isChatExpanded, toggleChatExpanded, selectedStoreName } = useApp();
-
-    if (!isChatPanelOpen) {
-        return null;
-    }
+    const { selectedStoreName } = useApp();
 
     const handleSearchSubmit = (query: string, storeId: string) => {
         if (onSearchSubmit) {
@@ -34,45 +28,9 @@ export function ChatPanel({
         }
     };
 
+    // Render as content within RightPanelContent (no header - tab provides label)
     return (
-        <motion.aside
-            initial={{ width: 0, opacity: 0 }}
-            animate={{
-                width: isChatExpanded ? 'auto' : 360,
-                flex: isChatExpanded ? 1 : 'none',
-                opacity: 1
-            }}
-            exit={{ width: 0, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 250, damping: 25 }}
-            className="h-full flex flex-col glass-hud border-l border-sys-separator"
-            style={{ minWidth: isChatExpanded ? 0 : 360 }}
-        >
-            {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-sys-separator">
-                <h2 className="text-headline text-sys-text-primary">Chat</h2>
-                <div className="flex items-center gap-1">
-                    {/* Expand/Collapse Button */}
-                    <button
-                        onClick={toggleChatExpanded}
-                        className="p-1.5 hover:bg-sys-bg-alt rounded-button transition-colors"
-                        title={isChatExpanded ? '縮小' : '拡大'}
-                    >
-                        {isChatExpanded ? (
-                            <Minimize2 className="w-4 h-4 text-sys-text-secondary" />
-                        ) : (
-                            <Maximize2 className="w-4 h-4 text-sys-text-secondary" />
-                        )}
-                    </button>
-                    {/* Close Button */}
-                    <button
-                        onClick={toggleChatPanel}
-                        className="p-1.5 hover:bg-sys-bg-alt rounded-button transition-colors"
-                    >
-                        <X className="w-4 h-4 text-sys-text-secondary" />
-                    </button>
-                </div>
-            </div>
-
+        <div className="h-full flex flex-col">
             {/* Chat Timeline */}
             <ChatTimeline
                 messages={messages}
@@ -85,7 +43,6 @@ export function ChatPanel({
                 onSubmit={handleSearchSubmit}
                 isProcessing={isProcessing}
             />
-        </motion.aside>
+        </div>
     );
 }
-

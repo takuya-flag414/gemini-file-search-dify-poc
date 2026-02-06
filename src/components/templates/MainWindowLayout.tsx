@@ -1,15 +1,21 @@
 import type { ReactNode } from 'react';
-import { PanelRight, MessageSquare } from 'lucide-react';
+import { PanelRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useApp } from '../../context/AppContext';
 import { Sidebar } from '../organisms/Sidebar';
-import { InspectorPanel } from '../organisms/InspectorPanel';
-import { ChatPanel } from '../organisms/ChatPanel';
+import { RightPanelContent } from '../organisms/RightPanelContent';
 import type { LogEntry, HistoryEntry, WorkflowInputs, FileSearchStore, ChatMessage } from '../../types';
 
 // ============================================
-// Main Window Layout (3-Pane)
+// Main Window Layout (3-Column Triptych)
 // ============================================
+
+// Spring animation config for panels
+const panelSpring = {
+    type: 'spring' as const,
+    stiffness: 250,
+    damping: 25,
+};
 
 interface MainWindowLayoutProps {
     children: ReactNode;
@@ -53,64 +59,88 @@ export function MainWindowLayout({
     thinkingSteps = [],
     onSearchSubmit,
 }: MainWindowLayoutProps) {
-    const { isInspectorOpen, toggleInspector, isChatPanelOpen, toggleChatPanel, isChatExpanded } = useApp();
+    const { isRightPanelOpen, toggleRightPanel, isRightPanelExpanded } = useApp();
 
     return (
-        <div className="h-screen w-screen overflow-hidden bg-[white]" style={{ background: 'var(--immersive-bg)' }}>
-            {/* Fullscreen Container */}
+        // Background container with wallpaper
+        <div
+            className="h-screen w-screen overflow-hidden"
+            style={{ background: 'var(--immersive-bg)' }}
+        >
+            {/* 3-Column Triptych Layout Container */}
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
-                className="relative h-full w-full flex"
+                className="absolute inset-0 flex gap-4 p-4"
             >
-                {/* Sidebar */}
-                <Sidebar
-                    onSelectHistory={onSelectHistory}
-                    onSubmit={onSubmit}
-                    isProcessing={isProcessing}
-                    uploadedFileId={uploadedFileId}
-                    onFileUpload={onFileUpload}
-                    // Knowledge Stores (Phase A)
-                    stores={stores}
-                    currentStore={currentStore}
-                    onStoreSelect={onStoreSelect}
-                    onCreateStore={onCreateStore}
-                    onDeleteStore={onDeleteStore}
-                    isLoadingStores={isLoadingStores}
-                />
+                {/* 1. Left: Navigation (Sidebar) */}
+                <motion.aside
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={panelSpring}
+                    className="w-[260px] flex-shrink-0 rounded-2xl glass-sidebar border border-white/20 shadow-xl overflow-hidden flex flex-col"
+                >
+                    <Sidebar
+                        onSelectHistory={onSelectHistory}
+                        onSubmit={onSubmit}
+                        isProcessing={isProcessing}
+                        uploadedFileId={uploadedFileId}
+                        onFileUpload={onFileUpload}
+                        // Knowledge Stores (Phase A)
+                        stores={stores}
+                        currentStore={currentStore}
+                        onStoreSelect={onStoreSelect}
+                        onCreateStore={onCreateStore}
+                        onDeleteStore={onDeleteStore}
+                        isLoadingStores={isLoadingStores}
+                    />
+                </motion.aside>
 
-                {/* Main Content - Hidden when chat is expanded */}
-                {!isChatExpanded && (
-                    <main className="flex-1 flex flex-col bg-sys-bg-base overflow-hidden relative z-10 shadow-xl">
+                {/* 2. Center: Knowledge Canvas (Main) - Hidden when chat is expanded */}
+                {!isRightPanelExpanded && (
+                    <motion.main
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={panelSpring}
+                        className="flex-1 rounded-2xl bg-white/60 dark:bg-black/40 backdrop-blur-xl border border-white/20 shadow-xl overflow-hidden relative flex flex-col"
+                    >
                         {/* Toolbar */}
                         <Toolbar
-                            onToggleChatPanel={toggleChatPanel}
-                            isChatPanelOpen={isChatPanelOpen}
-                            onToggleInspector={toggleInspector}
-                            isInspectorOpen={isInspectorOpen}
+                            onToggleRightPanel={toggleRightPanel}
+                            isRightPanelOpen={isRightPanelOpen}
                         />
 
                         {/* Content Area */}
                         <div className="flex-1 overflow-y-auto">
                             {children}
                         </div>
-                    </main>
+                    </motion.main>
                 )}
 
-                {/* Chat Panel (3rd column) */}
-                {isChatPanelOpen && (
-                    <ChatPanel
-                        messages={messages}
-                        thinkingSteps={thinkingSteps}
-                        isProcessing={isProcessing}
-                        onSearchSubmit={onSearchSubmit}
-                    />
-                )}
-
-                {/* Inspector Panel (4th column) */}
-                {isInspectorOpen && (
-                    <InspectorPanel logs={logs} />
+                {/* 3. Right: Inspector & Chat (with Tab Switching) */}
+                {isRightPanelOpen && (
+                    <motion.aside
+                        initial={{ opacity: 0, scale: 0.95, width: 0 }}
+                        animate={{
+                            opacity: 1,
+                            scale: 1,
+                            width: isRightPanelExpanded ? 'auto' : 320,
+                            flex: isRightPanelExpanded ? 1 : 'none'
+                        }}
+                        exit={{ opacity: 0, scale: 0.95, width: 0 }}
+                        transition={panelSpring}
+                        className="flex-shrink-0 rounded-2xl glass-hud border border-white/20 shadow-xl overflow-hidden flex flex-col"
+                        style={{ minWidth: isRightPanelExpanded ? 0 : 320 }}
+                    >
+                        <RightPanelContent
+                            messages={messages}
+                            thinkingSteps={thinkingSteps}
+                            isProcessing={isProcessing}
+                            onSearchSubmit={onSearchSubmit}
+                            logs={logs}
+                        />
+                    </motion.aside>
                 )}
             </motion.div>
         </div>
@@ -122,13 +152,11 @@ export function MainWindowLayout({
 // ============================================
 
 interface ToolbarProps {
-    onToggleChatPanel: () => void;
-    isChatPanelOpen: boolean;
-    onToggleInspector: () => void;
-    isInspectorOpen: boolean;
+    onToggleRightPanel: () => void;
+    isRightPanelOpen: boolean;
 }
 
-function Toolbar({ onToggleChatPanel, isChatPanelOpen, onToggleInspector, isInspectorOpen }: ToolbarProps) {
+function Toolbar({ onToggleRightPanel, isRightPanelOpen }: ToolbarProps) {
     const { selectedStoreName } = useApp();
 
     return (
@@ -138,39 +166,24 @@ function Toolbar({ onToggleChatPanel, isChatPanelOpen, onToggleInspector, isInsp
             </div>
 
             <div className="flex items-center gap-2">
-                {/* Chat Panel Toggle */}
+                {/* Right Panel Toggle */}
                 <button
-                    onClick={onToggleChatPanel}
+                    onClick={onToggleRightPanel}
                     className={`
                         rounded-button transition-all duration-200 flex items-center
-                        ${selectedStoreName && !isChatPanelOpen
+                        ${selectedStoreName && !isRightPanelOpen
                             ? 'min-h-[32px] px-3 gap-2 bg-action-primary text-white shadow-md hover:scale-105'
-                            : `p-2 ${isChatPanelOpen ? 'bg-action-primary text-white' : 'hover:bg-sys-bg-alt text-sys-text-secondary'}`
+                            : `p-2 ${isRightPanelOpen ? 'bg-action-primary text-white' : 'hover:bg-sys-bg-alt text-sys-text-secondary'}`
                         }
                     `}
-                    title={isChatPanelOpen ? 'Chatを閉じる' : 'Chatを開く'}
+                    title={isRightPanelOpen ? 'パネルを閉じる' : 'パネルを開く'}
                 >
-                    <MessageSquare className="w-4 h-4" />
-                    {selectedStoreName && !isChatPanelOpen && (
+                    <PanelRight className="w-4 h-4" />
+                    {selectedStoreName && !isRightPanelOpen && (
                         <span className="text-footnote font-medium pt-0.5">
                             ② {selectedStoreName} でチャットを開始
                         </span>
                     )}
-                </button>
-
-                {/* Inspector Toggle */}
-                <button
-                    onClick={onToggleInspector}
-                    className={`
-                        p-2 rounded-button transition-colors
-                        ${isInspectorOpen
-                            ? 'bg-action-primary text-white'
-                            : 'hover:bg-sys-bg-alt text-sys-text-secondary'
-                        }
-                    `}
-                    title={isInspectorOpen ? 'Inspectorを閉じる' : 'Inspectorを開く'}
-                >
-                    <PanelRight className="w-4 h-4" />
                 </button>
             </div>
         </header>

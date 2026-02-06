@@ -235,6 +235,25 @@
   -webkit-backdrop-filter: blur(40px);
 }
 
+/* === Liquid Glass Panel (for Triptych Layout) === */
+.glass-panel {
+  background: var(--mat-sidebar);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.15),
+    0 0 0 0.5px rgba(255, 255, 255, 0.5) inset;
+}
+
+.dark .glass-panel {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.3),
+    0 0 0 0.5px rgba(255, 255, 255, 0.2) inset;
+}
+
 /* === Halo Focus Ring === */
 .focus-ring:focus-visible {
   outline: none;

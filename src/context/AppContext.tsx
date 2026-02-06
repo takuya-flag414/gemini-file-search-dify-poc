@@ -29,12 +29,16 @@ interface AppContextValue {
     isInspectorOpen: boolean;
     toggleInspector: () => void;
 
-    // Chat Panel
+    // Chat Panel (legacy - kept for compatibility)
     isChatPanelOpen: boolean;
     toggleChatPanel: () => void;
     openChatPanel: () => void;
-    isChatExpanded: boolean;
-    toggleChatExpanded: () => void;
+
+    // Right Panel (unified Chat + Inspector)
+    isRightPanelOpen: boolean;
+    toggleRightPanel: () => void;
+    isRightPanelExpanded: boolean;
+    toggleRightPanelExpanded: () => void;
 
     // Selected Store (Context Injection)
     selectedStoreId: string | null;
@@ -113,9 +117,12 @@ export function AppProvider({ children }: AppProviderProps) {
     // Inspector State
     const [isInspectorOpen, setIsInspectorOpen] = useState(false);
 
-    // Chat Panel State
+    // Chat Panel State (legacy - kept for compatibility)
     const [isChatPanelOpen, setIsChatPanelOpen] = useState(false);
-    const [isChatExpanded, setIsChatExpanded] = useState(false);
+
+    // Right Panel State (unified toggle for the right panel)
+    const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
+    const [isRightPanelExpanded, setIsRightPanelExpanded] = useState(false);
 
     // Selected Store State (Context Injection)
     const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null);
@@ -179,26 +186,31 @@ export function AppProvider({ children }: AppProviderProps) {
         setIsInspectorOpen(prev => !prev);
     }, []);
 
-    // Toggle chat panel
+    // Toggle chat panel (legacy)
     const toggleChatPanel = useCallback(() => {
-        setIsChatPanelOpen(prev => {
+        setIsChatPanelOpen(prev => !prev);
+    }, []);
+
+    // Open chat panel (for workflow execution - legacy)
+    const openChatPanel = useCallback(() => {
+        setIsChatPanelOpen(true);
+    }, []);
+
+    // Toggle right panel (unified Chat + Inspector)
+    const toggleRightPanel = useCallback(() => {
+        setIsRightPanelOpen(prev => {
             const willClose = prev;
             // Reset expanded state when closing the panel
             if (willClose) {
-                setIsChatExpanded(false);
+                setIsRightPanelExpanded(false);
             }
             return !prev;
         });
     }, []);
 
-    // Open chat panel (for workflow execution)
-    const openChatPanel = useCallback(() => {
-        setIsChatPanelOpen(true);
-    }, []);
-
-    // Toggle chat expanded
-    const toggleChatExpanded = useCallback(() => {
-        setIsChatExpanded(prev => !prev);
+    // Toggle right panel expanded (maximize/minimize)
+    const toggleRightPanelExpanded = useCallback(() => {
+        setIsRightPanelExpanded(prev => !prev);
     }, []);
 
     // Toggle mock mode
@@ -257,8 +269,10 @@ export function AppProvider({ children }: AppProviderProps) {
         isChatPanelOpen,
         toggleChatPanel,
         openChatPanel,
-        isChatExpanded,
-        toggleChatExpanded,
+        isRightPanelOpen,
+        toggleRightPanel,
+        isRightPanelExpanded,
+        toggleRightPanelExpanded,
         selectedStoreId,
         selectedStoreName,
         setSelectedStore,

@@ -4,10 +4,9 @@
  */
 
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { X, ChevronDown, ChevronRight, Copy, Check, FileText, Server, Cpu } from 'lucide-react';
+import { ChevronDown, ChevronRight, Copy, Check, FileText, Server, Cpu } from 'lucide-react';
 import { dump } from 'js-yaml';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useApp } from '../../context/AppContext';
 import type { LogEntry, BackendId } from '../../types';
 import { Badge } from '../atoms';
 
@@ -214,8 +213,6 @@ interface InspectorPanelProps {
 }
 
 export function InspectorPanel({ logs }: InspectorPanelProps) {
-    const { isInspectorOpen, toggleInspector } = useApp();
-
     // Track if component has mounted to enable differential animation
     const hasMounted = useRef(false);
     useEffect(() => {
@@ -228,29 +225,9 @@ export function InspectorPanel({ logs }: InspectorPanelProps) {
 
     const groupedLogs = useMemo(() => groupLogsByBackend(logs), [logs]);
 
-    if (!isInspectorOpen) {
-        return null;
-    }
-
+    // Render as content within RightPanelContent (no header - tab provides label)
     return (
-        <motion.aside
-            initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 360, opacity: 1 }}
-            exit={{ width: 0, opacity: 0 }}
-            transition={{ type: 'spring', stiffness: 250, damping: 25 }}
-            className="h-full flex flex-col glass-hud border-l border-sys-separator"
-        >
-            {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-sys-separator">
-                <h2 className="text-headline text-sys-text-primary">Inspector</h2>
-                <button
-                    onClick={toggleInspector}
-                    className="p-1.5 hover:bg-sys-bg-alt rounded-button transition-colors"
-                >
-                    <X className="w-4 h-4 text-sys-text-secondary" />
-                </button>
-            </div>
-
+        <div className="h-full flex flex-col">
             {/* Log List */}
             <div className="flex-1 overflow-y-auto">
                 {logs.length === 0 ? (
@@ -274,7 +251,7 @@ export function InspectorPanel({ logs }: InspectorPanelProps) {
                     <CopyYamlButton logs={logs} />
                 </div>
             )}
-        </motion.aside>
+        </div>
     );
 }
 

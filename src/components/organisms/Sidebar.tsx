@@ -1,22 +1,25 @@
 import { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import {
-    SidebarHeader,
     KnowledgeStoresSection,
-    WorkflowSection,
+    // WorkflowSection, // Hidden for new layout - to be moved to right panel later
     SettingsSection,
     HistorySection,
     SidebarFooter,
+    TrafficLights,
 } from '../molecules/sidebar';
 import type { HistoryEntry, WorkflowInputs, FileSearchStore } from '../../types';
 
 // ============================================
-// Sidebar Component
+// Sidebar Component (3-Layer Structure)
 // ============================================
+// Level 1: SOURCES (Top) - Knowledge Stores list
+// Level 2: VERIFICATION (Middle) - History logs
+// Level 3: SYSTEM (Bottom) - Settings
 
 interface SidebarProps {
     onSelectHistory?: (entry: HistoryEntry) => void;
-    // Workflow props
+    // Workflow props (hidden but kept for future use)
     onSubmit?: (inputs: WorkflowInputs, query: string) => void;
     isProcessing?: boolean;
     uploadedFileId?: string;
@@ -32,10 +35,11 @@ interface SidebarProps {
 
 export function Sidebar({
     onSelectHistory,
-    onSubmit,
-    isProcessing = false,
-    uploadedFileId,
-    onFileUpload,
+    // Workflow props - kept but unused in current layout
+    // onSubmit,
+    // isProcessing = false,
+    // uploadedFileId,
+    // onFileUpload,
     // Knowledge Stores (Phase A)
     stores = [],
     currentStore,
@@ -53,18 +57,23 @@ export function Sidebar({
         toggleDarkMode
     } = useApp();
 
+    // KnowledgeStores is always open in the new layout (Finder-style)
     const [isKnowledgeStoresOpen, setIsKnowledgeStoresOpen] = useState(true);
-    const [isWorkflowOpen, setIsWorkflowOpen] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
     return (
-        <aside className="w-sidebar h-full flex flex-col glass-sidebar border-r border-sys-separator">
-            {/* App Title */}
-            <SidebarHeader />
+        <div className="h-full flex flex-col text-sm text-sys-text-primary">
+            {/* Window Controls Area (Traffic Lights) */}
+            <div className="p-4 pb-2">
+                <TrafficLights />
+            </div>
 
-            {/* Sidebar Content */}
-            <div className="flex-1 overflow-y-auto px-4 py-2">
+            {/* Level 1: SOURCES (Scrollable) */}
+            <div className="flex-1 overflow-y-auto px-2 py-2">
+                <div className="mb-2 px-2 text-xs font-semibold text-sys-text-tertiary uppercase tracking-wider">
+                    Sources
+                </div>
                 <KnowledgeStoresSection
                     isOpen={isKnowledgeStoresOpen}
                     onToggle={() => setIsKnowledgeStoresOpen(!isKnowledgeStoresOpen)}
@@ -76,19 +85,24 @@ export function Sidebar({
                     isLoadingStores={isLoadingStores}
                 />
 
-                {/* Workflow Section */}
-                {onSubmit && (
-                    <WorkflowSection
-                        isOpen={isWorkflowOpen}
-                        onToggle={() => setIsWorkflowOpen(!isWorkflowOpen)}
-                        onSubmit={onSubmit}
-                        isProcessing={isProcessing}
-                        uploadedFileId={uploadedFileId}
-                        onFileUpload={onFileUpload}
-                    />
-                )}
+                {/* Level 2: VERIFICATION */}
+                <div className="mt-6 mb-2 px-2 text-xs font-semibold text-sys-text-tertiary uppercase tracking-wider">
+                    Verification
+                </div>
+                <HistorySection
+                    isOpen={isHistoryOpen}
+                    onToggle={() => setIsHistoryOpen(!isHistoryOpen)}
+                    history={history}
+                    onClearHistory={clearHistory}
+                    onSelectHistory={onSelectHistory}
+                />
+            </div>
 
-                {/* Settings Section */}
+            {/* Level 3: SYSTEM (Fixed Bottom) */}
+            <div className="mt-auto border-t border-sys-separator bg-black/5 dark:bg-white/5 px-2 py-3 backdrop-blur-md">
+                <div className="px-2 text-xs font-semibold text-sys-text-tertiary uppercase tracking-wider mb-1">
+                    System
+                </div>
                 <SettingsSection
                     isOpen={isSettingsOpen}
                     onToggle={() => setIsSettingsOpen(!isSettingsOpen)}
@@ -100,21 +114,17 @@ export function Sidebar({
                     onBaseUrlChange={(value) => updateConfig({ baseUrl: value })}
                 />
 
-                {/* History Section */}
-                <HistorySection
-                    isOpen={isHistoryOpen}
-                    onToggle={() => setIsHistoryOpen(!isHistoryOpen)}
-                    history={history}
-                    onClearHistory={clearHistory}
-                    onSelectHistory={onSelectHistory}
+                {/* Dark Mode Toggle */}
+                <SidebarFooter
+                    isDarkMode={isDarkMode}
+                    onToggleDarkMode={toggleDarkMode}
                 />
             </div>
 
-            {/* Mock Mode & Dark Mode Toggles */}
-            <SidebarFooter
-                isDarkMode={isDarkMode}
-                onToggleDarkMode={toggleDarkMode}
-            />
-        </aside>
+            {/* WorkflowSection is hidden in the new layout
+             * It will be moved to the right panel's "Workflow Info" tab in a future update
+             * Props are still available: onSubmit, isProcessing, uploadedFileId, onFileUpload
+             */}
+        </div>
     );
 }
