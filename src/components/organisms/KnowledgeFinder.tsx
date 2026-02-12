@@ -14,7 +14,7 @@ import { FileListItem } from '../atoms/FileListItem';
 import { FilterChips, type ActiveFilters } from '../atoms/FilterChips';
 import { FileDetailPanel } from '../molecules/FileDetailPanel';
 import { FileContextMenu } from '../molecules/FileContextMenu';
-import { MetadataWizard, type FileMetadata } from '../molecules/upload';
+// MetadataWizard は UploadGallery に置き換え済み（App.tsx レベルで表示）
 
 // ============================================
 // Props
@@ -135,11 +135,11 @@ export function KnowledgeFinder({
     isUploading,
     onDeleteFile,
     onUploadClick,
-    onUploadWithMetadata,
+    // onUploadWithMetadata は UploadGallery に移行済み
 }: KnowledgeFinderProps) {
     const [viewMode, setViewMode] = useState<FinderViewMode>('grid');
     const [selectedFiles, setSelectedFiles] = useState<StoredFile[]>([]);
-    const [isWizardOpen, setIsWizardOpen] = useState(false);
+    // isWizardOpen は UploadGallery に移行済み（App.tsx 管理）
     const [isDetailPanelOpen, setIsDetailPanelOpen] = useState(false);
     const [isFilterBarOpen, setIsFilterBarOpen] = useState(false);
 
@@ -210,26 +210,10 @@ export function KnowledgeFinder({
         );
     }, [searchQuery, activeFilters]);
 
-    // Open wizard for upload with metadata
+    // Upload ボタンクリック → UploadGallery を起動（App.tsx 側で管理）
     const handleUploadButtonClick = useCallback(() => {
-        if (onUploadWithMetadata) {
-            setIsWizardOpen(true);
-        } else {
-            // Fallback to original behavior
-            onUploadClick();
-        }
-    }, [onUploadWithMetadata, onUploadClick]);
-
-    // Handle upload with metadata from wizard
-    const handleUploadWithMetadata = useCallback(async (file: File, metadata: FileMetadata) => {
-        if (onUploadWithMetadata) {
-            const metadataRecord: Record<string, string> = {};
-            if (metadata.company) metadataRecord.metadata_company = metadata.company;
-            if (metadata.department) metadataRecord.metadata_department = metadata.department;
-            if (metadata.filetype) metadataRecord.metadata_filetype = metadata.filetype;
-            await onUploadWithMetadata(file, metadataRecord);
-        }
-    }, [onUploadWithMetadata]);
+        onUploadClick();
+    }, [onUploadClick]);
 
     // Handle file selection (supports Ctrl/Cmd + click for multi-select)
     const handleSelectFile = useCallback((file: StoredFile, event?: React.MouseEvent) => {
@@ -619,13 +603,7 @@ export function KnowledgeFinder({
                 onDelete={handleDeleteFromPanel}
             />
 
-            {/* Metadata Wizard Modal */}
-            <MetadataWizard
-                isOpen={isWizardOpen}
-                onClose={() => setIsWizardOpen(false)}
-                onUpload={handleUploadWithMetadata}
-                isUploading={isUploading}
-            />
+            {/* Upload は UploadGallery (App.tsx) に移行済み */}
         </motion.div>
     );
 }

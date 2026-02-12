@@ -4,6 +4,7 @@ import { ToastProvider } from './context/ToastContext';
 import { WorkflowLogProvider, useWorkflowLog } from './context/WorkflowLogContext';
 import { MainWindowLayout } from './components/templates/MainWindowLayout';
 import { KnowledgeFinder } from './components/organisms/KnowledgeFinder';
+import { UploadGallery } from './components/organisms/UploadGallery';
 import { useDifyStream, useGeminiFileSystem } from './hooks';
 import type { WorkflowInputs, HistoryEntry, AppViewMode, StoredFile } from './types';
 
@@ -28,6 +29,7 @@ function AppContent() {
   const logs = [...workflowLogs, ...streamLogs].sort((a, b) => b.timestamp - a.timestamp);
 
   // Phase A: File System Hook
+  const fileSystemHook = useGeminiFileSystem();
   const {
     stores,
     currentStore,
@@ -41,10 +43,11 @@ function AppContent() {
     uploadFile: uploadToStore,
     deleteFile: deleteFromStore,
     deleteStore,
-  } = useGeminiFileSystem();
+  } = fileSystemHook;
 
   const [uploadedFileId, setUploadedFileId] = useState<string | undefined>();
   const [viewMode, setViewMode] = useState<AppViewMode>('chat');
+  const [isUploadGalleryOpen, setIsUploadGalleryOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Handle file upload (for workflow)
@@ -111,10 +114,18 @@ function AppContent() {
     await sendMessage(inputs, query);
   }, [sendMessage]);
 
-  // Handle upload click in Finder
+  // Handle upload click in Finder → UploadGallery モーダルを起動
   const handleUploadClick = useCallback(() => {
-    fileInputRef.current?.click();
+    setIsUploadGalleryOpen(true);
   }, []);
+
+  // UploadGallery 完了時のコールバック
+  const handleUploadGalleryComplete = useCallback(() => {
+    // ファイル一覧を再読み込み
+    if (currentStore) {
+      fileSystemHook.fetchFiles(currentStore.storeName);
+    }
+  }, [currentStore, fileSystemHook]);
 
   // Handle file input change
   const handleFileInputChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -201,7 +212,15 @@ function AppContent() {
         </div>
       </MainWindowLayout>
 
-      {/* Hidden File Input */}
+      {/* Upload Gallery Modal */}
+      <UploadGallery
+        isOpen={isUploadGalleryOpen}
+        onClose={() => setIsUploadGalleryOpen(false)}
+        fileSystem={fileSystemHook}
+        onUploadComplete={handleUploadGalleryComplete}
+      />
+
+      {/* Hidden File Input (legacy single file upload) */}
       <input
         ref={fileInputRef}
         type="file"

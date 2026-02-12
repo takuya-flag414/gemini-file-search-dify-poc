@@ -261,15 +261,26 @@ export class DifyWorkflowClient {
         );
 
         // Backend B returns outputs.result as a flat StoredFile array
+        // Note: Backend B may return an empty array on success (upload_file doesn't always return file info)
         const result = this.parseResult<StoredFile[]>(response);
 
-        // Return first file (upload returns array with single item)
-        if (!result || result.length === 0) {
-            throw new Error('Upload succeeded but no file returned');
+        // Return first file if available, otherwise construct a placeholder
+        if (result && result.length > 0) {
+            return this.normalizeStoredFile(result[0]);
         }
 
-        // state値を正規化して返す
-        return this.normalizeStoredFile(result[0]);
+        // Backend B upload succeeded but returned empty result
+        // Construct a minimal placeholder — real data will be fetched by list_files
+        console.log('[DifyWorkflowClient] Upload succeeded with empty result, constructing placeholder');
+        return {
+            documentId: `pending-${Date.now()}`,
+            displayName,
+            mimeType: file.type || 'application/octet-stream',
+            sizeBytes: file.size,
+            createTime: new Date().toISOString(),
+            state: 'PROCESSING' as const,
+            customMetadata: metadata,
+        } as StoredFile;
     }
 
     /**

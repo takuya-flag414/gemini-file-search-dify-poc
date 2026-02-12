@@ -6,4 +6,5 @@ export { ChatTimeline } from './ChatTimeline';
 export { KnowledgeFinder } from './KnowledgeFinder';
 export { ChatPanel } from './ChatPanel';
 export { RightPanelContent } from './RightPanelContent';
+export { UploadGallery } from './UploadGallery';
 
