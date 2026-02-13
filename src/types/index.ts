@@ -325,7 +325,10 @@ export interface WorkflowPayload {
     displayName?: string;
     documentId?: string;
     pageToken?: string;
+    /** @deprecated filesMetadata を使用してください */
     customMetadata?: Array<{ key: string; string_value: string }>;
+    /** ファイル名をキーとするメタデータ辞書 (New Schema) */
+    filesMetadata?: Record<string, Array<{ key: string; string_value: string }>>;
 }
 
 /**

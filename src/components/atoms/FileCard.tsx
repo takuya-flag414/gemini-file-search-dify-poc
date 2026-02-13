@@ -146,15 +146,11 @@ export function FileCard({ file, onSelect, onDelete, isSelected = false }: FileC
 
             {/* Metadata Tags - Fixed Height Container */}
             <div className="h-[60px] w-full overflow-hidden px-1 pointer-events-none select-none">
-                {(file.customMetadata?.metadata_company || file.customMetadata?.metadata_department || file.customMetadata?.metadata_filetype) && (
+                {Object.keys(file.customMetadata).length > 0 && (
                     <div className="flex flex-wrap gap-1 justify-center w-full">
-                        {[
-                            file.customMetadata?.metadata_company,
-                            file.customMetadata?.metadata_department,
-                            file.customMetadata?.metadata_filetype
-                        ].filter(Boolean).map((meta, i) => (
+                        {Object.entries(file.customMetadata).slice(0, 3).map(([key, value]) => (
                             <span
-                                key={i}
+                                key={key}
                                 className="
                                     text-[10px] leading-3 px-1.5 py-0.5
                                     bg-sys-bg-alt/80 rounded-[4px]
@@ -163,7 +159,7 @@ export function FileCard({ file, onSelect, onDelete, isSelected = false }: FileC
                                     tabular-nums truncate max-w-full
                                 "
                             >
-                                {meta}
+                                {String(value)}
                             </span>
                         ))}
                     </div>

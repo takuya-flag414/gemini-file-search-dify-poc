@@ -240,18 +240,24 @@ export class DifyWorkflowClient {
         const uploadedFile = await this.uploadFileToDify(file);
 
         // Step 2: Convert metadata to API format
-        const customMetadata = Object.entries(metadata).map(([key, value]) => ({
+        const metadataItems = Object.entries(metadata).map(([key, value]) => ({
             key,
             string_value: String(value),
         }));
 
-        // Step 3: Run upload workflow
+        // Step 3: Build filesMetadata (filename-keyed dictionary)
+        const filesMetadata: Record<string, Array<{ key: string; string_value: string }>> = {};
+        if (metadataItems.length > 0) {
+            filesMetadata[file.name] = metadataItems;
+        }
+
+        // Step 4: Run upload workflow
         const response = await this.runWorkflow(
             'upload_file',
             {
                 storeName,
                 displayName: displayName, // Use separate display name
-                customMetadata,
+                filesMetadata,
             },
             [{
                 type: 'document',

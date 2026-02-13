@@ -15,7 +15,23 @@ kind: app
 version: 0.5.0
 workflow:
   conversation_variables: []
-  environment_variables: []
+  environment_variables:
+  - description: ''
+    id: b00e7640-a329-4f05-aee5-5cd78c57a820
+    name: Dev_Mode
+    selector:
+    - env
+    - Dev_Mode
+    value: 'true'
+    value_type: string
+  - description: ''
+    id: 38beddbd-c52f-4682-9c03-017028292ea9
+    name: GeminiAPIKey
+    selector:
+    - env
+    - GeminiAPIKey
+    value: ''
+    value_type: secret
   features:
     file_upload:
       allowed_file_extensions:
@@ -239,19 +255,6 @@ workflow:
       type: custom
       zIndex: 0
     - data:
-        isInIteration: true
-        isInLoop: false
-        iteration_id: '1770878419691'
-        sourceType: iteration-start
-        targetType: tool
-      id: 1770878419691start-source-17708784817350-target
-      source: 1770878419691start
-      sourceHandle: source
-      target: '17708784817350'
-      targetHandle: target
-      type: custom
-      zIndex: 1002
-    - data:
         isInLoop: false
         sourceType: iteration
         targetType: code
@@ -262,6 +265,32 @@ workflow:
       targetHandle: target
       type: custom
       zIndex: 0
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1770878419691'
+        sourceType: iteration-start
+        targetType: code
+      id: 1770878419691start-source-1770972071547-target
+      source: 1770878419691start
+      sourceHandle: source
+      target: '1770972071547'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1770878419691'
+        sourceType: code
+        targetType: tool
+      id: 1770972071547-source-17708784817350-target
+      source: '1770972071547'
+      sourceHandle: source
+      target: '17708784817350'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
     nodes:
     - data:
         selected: false
@@ -322,26 +351,27 @@ workflow:
     - data:
         code: "import json\nimport re\n\ndef main(payload: str) -> dict:\n    try:\n\
           \        # 入力が空の場合のガード\n        if not payload:\n            return default_output()\n\
-          \n        # 1. まず標準的なJSONパースを試みる\n        try:\n            data = json.loads(payload)\n\
-          \        except json.JSONDecodeError:\n            # 2. 失敗した場合、シングルクォートをダブルクォートに置換してリトライ（簡易的な修復）\n\
-          \            # 注意: 値の中にシングルクォートが含まれる場合は破損する可能性がありますが、PoCとしては許容します\n    \
-          \        fixed_payload = payload.replace(\"'\", '\"')\n            data\
-          \ = json.loads(fixed_payload)\n        \n        # 後続のツールが使いやすいように展開\n \
-          \       return {\n            \"data\": data,\n            \"store_name\"\
-          : data.get(\"storeName\", \"\"),\n            \"display_name\": data.get(\"\
-          displayName\", \"\"),\n            \"document_id\": data.get(\"documentId\"\
-          , \"\"),\n            \"page_token\": data.get(\"pageToken\", \"\"),\n \
-          \           \"custom_metadata_str\": json.dumps(data.get(\"customMetadata\"\
+          \n        # 1. JSONパース (シングルクォート補正付き)\n        try:\n            data =\
+          \ json.loads(payload)\n        except json.JSONDecodeError:\n          \
+          \  fixed_payload = payload.replace(\"'\", '\"')\n            data = json.loads(fixed_payload)\n\
+          \        \n        # 2. メタデータ辞書の抽出\n        # フロントエンドから送られる {\"filename\"\
+          : [metadata], ...} の構造を取得\n        files_metadata = data.get(\"filesMetadata\"\
+          , {})\n        \n        return {\n            \"data\": data,\n       \
+          \     \"store_name\": data.get(\"storeName\", \"\"),\n            \"display_name\"\
+          : data.get(\"displayName\", \"\"),\n            \"document_id\": data.get(\"\
+          documentId\", \"\"),\n            \"page_token\": data.get(\"pageToken\"\
+          , \"\"),\n            # 個別メタデータ用の辞書全体をJSON文字列化して渡す\n            \"files_metadata_str\"\
+          : json.dumps(files_metadata, ensure_ascii=False),\n            # 後方互換性のため残すが、個別付与時は使用しない\n\
+          \            \"common_metadata_str\": json.dumps(data.get(\"customMetadata\"\
           , []), ensure_ascii=False)\n        }\n    except Exception as e:\n    \
-          \    # エラー時はデバッグしやすいようにエラー内容を含める（本番ではログ出力推奨）\n        return default_output(error_msg=str(e))\n\
-          \ndef default_output(error_msg=\"\"):\n    # エラー時または空入力時のデフォルト値\n    return\
-          \ {\n        \"data\": {\"error\": error_msg}, # エラー情報をデータに含める\n       \
-          \ \"store_name\": \"\",\n        \"display_name\": \"\",\n        \"document_id\"\
-          : \"\",\n        \"page_token\": \"\",\n        \"custom_metadata_str\"\
-          : \"[]\"\n    }"
+          \    return default_output(error_msg=str(e))\n\ndef default_output(error_msg=\"\
+          \"):\n    return {\n        \"data\": {\"error\": error_msg},\n        \"\
+          store_name\": \"\",\n        \"display_name\": \"\",\n        \"document_id\"\
+          : \"\",\n        \"page_token\": \"\",\n        \"files_metadata_str\":\
+          \ \"{}\",\n        \"common_metadata_str\": \"[]\"\n    }"
         code_language: python3
         outputs:
-          custom_metadata_str:
+          common_metadata_str:
             children: null
             type: string
           data:
@@ -351,6 +381,9 @@ workflow:
             children: null
             type: string
           document_id:
+            children: null
+            type: string
+          files_metadata_str:
             children: null
             type: string
           page_token:
@@ -923,7 +956,7 @@ workflow:
       positionAbsolute:
         x: 1652
         y: 268
-      selected: true
+      selected: false
       sourcePosition: right
       targetPosition: left
       type: custom
@@ -1106,7 +1139,7 @@ workflow:
         error_handle_mode: terminated
         flatten_output: true
         height: 172
-        is_parallel: false
+        is_parallel: true
         iterator_input_type: array[file]
         iterator_selector:
         - '1768963579039'
@@ -1120,7 +1153,7 @@ workflow:
         start_node_id: 1770878419691start
         title: イテレーション
         type: iteration
-        width: 486
+        width: 742
       height: 172
       id: '1770878419691'
       position:
@@ -1133,7 +1166,7 @@ workflow:
       sourcePosition: right
       targetPosition: left
       type: custom
-      width: 486
+      width: 742
       zIndex: 1
     - data:
         desc: ''
@@ -1334,7 +1367,7 @@ workflow:
         tool_parameters:
           custom_metadata:
             type: mixed
-            value: '{{#1768963967522.custom_metadata_str#}}'
+            value: '{{#1770972071547.target_metadata_str#}}'
           display_name:
             type: mixed
             value: '{{#1770878419691.item.name#}}'
@@ -1357,19 +1390,66 @@ workflow:
       id: '17708784817350'
       parentId: '1770878419691'
       position:
+        x: 484
+        y: 60
+      positionAbsolute:
+        x: 1530
+        y: 720
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        code: "import json\n\ndef main(current_file_name: str, all_metadata_json:\
+          \ str) -> dict:\n    \"\"\"\n    現在のファイル名に対応するメタデータを辞書から抽出する\n    \"\"\"\
+          \n    try:\n        # メタデータ辞書全体をロード\n        metadata_map = json.loads(all_metadata_json)\n\
+          \        \n        # ファイル名で検索 (完全一致)\n        # 見つからない場合は空リスト [] を返す\n \
+          \       target_metadata = metadata_map.get(current_file_name, [])\n    \
+          \    \n        # 文字列として返す (Gemini Pluginの入力要件)\n        return {\n     \
+          \       \"target_metadata_str\": json.dumps(target_metadata, ensure_ascii=False)\n\
+          \        }\n    except Exception as e:\n        # エラー時は安全に空リストを返す\n    \
+          \    return {\n            \"target_metadata_str\": \"[]\"\n        }"
+        code_language: python3
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1770878419691'
+        outputs:
+          target_metadata_str:
+            children: null
+            type: string
+        selected: false
+        title: Metadata Lookup
+        type: code
+        variables:
+        - value_selector:
+          - '1770878419691'
+          - item
+          - name
+          value_type: file
+          variable: current_file_name
+        - value_selector:
+          - '1768963967522'
+          - files_metadata_str
+          value_type: string
+          variable: all_metadata_json
+      height: 52
+      id: '1770972071547'
+      parentId: '1770878419691'
+      position:
         x: 184
         y: 60
       positionAbsolute:
         x: 1230
         y: 720
-      selected: false
       sourcePosition: right
       targetPosition: left
       type: custom
       width: 242
       zIndex: 1002
     viewport:
-      x: -988.5
-      y: 131.7
-      zoom: 0.7
+      x: -743.3796156423354
+      y: 233.5323371163846
+      zoom: 0.659753955386447
   rag_pipeline_variables: []
