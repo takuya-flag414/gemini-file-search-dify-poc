@@ -25,11 +25,8 @@ export class DifyApiClient {
     // ============================================
 
     async uploadFile(file: File): Promise<UploadedFile> {
-        // Apply transparent file mutation for .md files
-        const processedFile = await this.mutateFileIfNeeded(file);
-
         const formData = new FormData();
-        formData.append('file', processedFile);
+        formData.append('file', file);
         formData.append('user', this.userId);
 
         const response = await fetch(`${this.baseUrl}/files/upload`, {
@@ -48,30 +45,6 @@ export class DifyApiClient {
         return response.json();
     }
 
-    // ============================================
-    // Transparent File Mutation
-    // ============================================
-
-    private async mutateFileIfNeeded(file: File): Promise<File> {
-        // Check if file is .md (Markdown)
-        if (/\.md$/i.test(file.name)) {
-            // Read file content
-            const content = await file.text();
-
-            // Create new blob with text/plain MIME type
-            const blob = new Blob([content], { type: 'text/plain' });
-
-            // Create new file with .txt extension
-            const newFileName = file.name.replace(/\.md$/i, '.txt');
-
-            return new File([blob], newFileName, {
-                type: 'text/plain',
-                lastModified: file.lastModified,
-            });
-        }
-
-        return file;
-    }
 
     // ============================================
     // Chat Messages (Streaming)

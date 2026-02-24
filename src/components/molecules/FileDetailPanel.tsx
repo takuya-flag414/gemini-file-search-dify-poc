@@ -5,7 +5,7 @@
 
 import { useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Info } from 'lucide-react';
+import { X } from 'lucide-react';
 import type { StoredFile } from '../../types';
 import { FileIcon } from '../atoms/FileIcon';
 
@@ -202,17 +202,7 @@ export function FileDetailPanel({
                                         )}
                                     </div>
 
-                                    {file.mimeType === 'text/plain' && file.displayName.toLowerCase().endsWith('.md') && (
-                                        <>
-                                            <span className="text-right text-sys-text-secondary font-medium">Note:</span>
-                                            <div className="flex items-start gap-1.5 text-sys-text-tertiary">
-                                                <Info className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
-                                                <span className="text-caption-2 leading-tight">
-                                                    Markdownファイルはテキストとして扱われます
-                                                </span>
-                                            </div>
-                                        </>
-                                    )}
+
                                 </div>
                             </div>
 

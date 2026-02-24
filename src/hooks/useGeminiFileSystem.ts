@@ -10,7 +10,7 @@ import type { FileSearchStore, StoredFile } from '../types';
 import { getMockFileSystem } from '../services/MockFileSystem';
 import { DifyWorkflowClient } from '../services/DifyWorkflowClient';
 import { useApp } from '../context/AppContext';
-import { convertMdToTxt } from '../utils/fileConversion';
+
 
 // ============================================
 // Hook Types
@@ -278,10 +278,7 @@ export function useGeminiFileSystem(): UseGeminiFileSystemReturn {
             // Display Name is always the original name
             const displayName = file.name;
 
-            // Convert MD to TXT if necessary
-            const fileToUpload = await convertMdToTxt(file);
-
-            const newFile = await client.uploadFile(currentStore.storeName, fileToUpload, displayName, metadata);
+            const newFile = await client.uploadFile(currentStore.storeName, file, displayName, metadata);
             // Re-fetch files to ensure consistency (avoid duplicate entries from optimistic update)
             await fetchFiles(currentStore.storeName);
             return newFile;
